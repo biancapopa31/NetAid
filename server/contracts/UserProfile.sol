@@ -41,6 +41,15 @@ contract UserProfile {
 
     /*  FUNCTIONS   */
 
+    function existsUser(address _user) external view returns (bool){
+        return bytes( profiles[_user].username).length != 0;
+    }
+
+    function existsUser(string memory _username) external view returns (bool){
+        return usernames[_username] != nullAddress;
+    }
+
+
     function getProfile(address user) public view returns (Profile memory){
         return profiles[user];
     }

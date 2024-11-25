@@ -114,6 +114,44 @@
 				"type": "function"
 			},
 			{
+				"inputs": [
+					{
+						"internalType": "string",
+						"name": "_username",
+						"type": "string"
+					}
+				],
+				"name": "existsUser",
+				"outputs": [
+					{
+						"internalType": "bool",
+						"name": "",
+						"type": "bool"
+					}
+				],
+				"stateMutability": "view",
+				"type": "function"
+			},
+			{
+				"inputs": [
+					{
+						"internalType": "address",
+						"name": "_user",
+						"type": "address"
+					}
+				],
+				"name": "existsUser",
+				"outputs": [
+					{
+						"internalType": "bool",
+						"name": "",
+						"type": "bool"
+					}
+				],
+				"stateMutability": "view",
+				"type": "function"
+			},
+			{
 				"inputs": [],
 				"name": "getAllUsersAddrs",
 				"outputs": [
@@ -191,11 +229,11 @@
 	},
 	"sources": {
 		"server/contracts/UserProfile.sol": {
-			"keccak256": "0x0cf879e6de8f1df4d6faf2e95953221ad35503e6987d5660b0cf6b0f1df32d72",
+			"keccak256": "0x040d71bb41ec09861b38a3b6b671753ac19da058026319fb9f9f9239e7bb8deb",
 			"license": "MIT",
 			"urls": [
-				"bzz-raw://826cc7c9319ba091561d8dba71be1a30405eef6332e2a5f0b2deeb4584496850",
-				"dweb:/ipfs/QmRggTqQsUiBtRY3LbQwbeE5duhy5f52sdujKPgQrG5BQ6"
+				"bzz-raw://ab1bcf14211e5edde218e9f7644694ca103a69cc59f89d814aa30d6604f0b7f9",
+				"dweb:/ipfs/Qmczp6Een4SmGySyc4Z8kgCSVbCGYNXiMERkb7nvLWchL8"
 			]
 		}
 	},
