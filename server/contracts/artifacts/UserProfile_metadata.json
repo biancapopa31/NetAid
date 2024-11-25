@@ -1,0 +1,203 @@
+{
+	"compiler": {
+		"version": "0.8.27+commit.40a35a09"
+	},
+	"language": "Solidity",
+	"output": {
+		"abi": [
+			{
+				"anonymous": false,
+				"inputs": [
+					{
+						"indexed": false,
+						"internalType": "address",
+						"name": "user",
+						"type": "address"
+					},
+					{
+						"indexed": false,
+						"internalType": "string",
+						"name": "username",
+						"type": "string"
+					},
+					{
+						"indexed": false,
+						"internalType": "string",
+						"name": "bio",
+						"type": "string"
+					},
+					{
+						"indexed": false,
+						"internalType": "string",
+						"name": "profilePictureURI",
+						"type": "string"
+					}
+				],
+				"name": "ProfileCreated",
+				"type": "event"
+			},
+			{
+				"anonymous": false,
+				"inputs": [
+					{
+						"indexed": false,
+						"internalType": "address",
+						"name": "user",
+						"type": "address"
+					},
+					{
+						"indexed": false,
+						"internalType": "string",
+						"name": "username",
+						"type": "string"
+					},
+					{
+						"indexed": false,
+						"internalType": "string",
+						"name": "bio",
+						"type": "string"
+					},
+					{
+						"indexed": false,
+						"internalType": "string",
+						"name": "profilePictureURI",
+						"type": "string"
+					}
+				],
+				"name": "ProfileUpdated",
+				"type": "event"
+			},
+			{
+				"inputs": [
+					{
+						"internalType": "string",
+						"name": "username",
+						"type": "string"
+					},
+					{
+						"internalType": "string",
+						"name": "bio",
+						"type": "string"
+					},
+					{
+						"internalType": "string",
+						"name": "profilePictureURI",
+						"type": "string"
+					}
+				],
+				"name": "createNewProfile",
+				"outputs": [],
+				"stateMutability": "nonpayable",
+				"type": "function"
+			},
+			{
+				"inputs": [
+					{
+						"internalType": "string",
+						"name": "username",
+						"type": "string"
+					},
+					{
+						"internalType": "string",
+						"name": "bio",
+						"type": "string"
+					},
+					{
+						"internalType": "string",
+						"name": "profilePictureURI",
+						"type": "string"
+					}
+				],
+				"name": "editProfile",
+				"outputs": [],
+				"stateMutability": "nonpayable",
+				"type": "function"
+			},
+			{
+				"inputs": [],
+				"name": "getAllUsersAddrs",
+				"outputs": [
+					{
+						"internalType": "address[]",
+						"name": "",
+						"type": "address[]"
+					}
+				],
+				"stateMutability": "view",
+				"type": "function"
+			},
+			{
+				"inputs": [
+					{
+						"internalType": "address",
+						"name": "user",
+						"type": "address"
+					}
+				],
+				"name": "getProfile",
+				"outputs": [
+					{
+						"components": [
+							{
+								"internalType": "string",
+								"name": "username",
+								"type": "string"
+							},
+							{
+								"internalType": "string",
+								"name": "bio",
+								"type": "string"
+							},
+							{
+								"internalType": "string",
+								"name": "profilePictureURI",
+								"type": "string"
+							}
+						],
+						"internalType": "struct UserProfile.Profile",
+						"name": "",
+						"type": "tuple"
+					}
+				],
+				"stateMutability": "view",
+				"type": "function"
+			}
+		],
+		"devdoc": {
+			"kind": "dev",
+			"methods": {},
+			"version": 1
+		},
+		"userdoc": {
+			"kind": "user",
+			"methods": {},
+			"version": 1
+		}
+	},
+	"settings": {
+		"compilationTarget": {
+			"server/contracts/UserProfile.sol": "UserProfile"
+		},
+		"evmVersion": "cancun",
+		"libraries": {},
+		"metadata": {
+			"bytecodeHash": "ipfs"
+		},
+		"optimizer": {
+			"enabled": false,
+			"runs": 200
+		},
+		"remappings": []
+	},
+	"sources": {
+		"server/contracts/UserProfile.sol": {
+			"keccak256": "0x0cf879e6de8f1df4d6faf2e95953221ad35503e6987d5660b0cf6b0f1df32d72",
+			"license": "MIT",
+			"urls": [
+				"bzz-raw://826cc7c9319ba091561d8dba71be1a30405eef6332e2a5f0b2deeb4584496850",
+				"dweb:/ipfs/QmRggTqQsUiBtRY3LbQwbeE5duhy5f52sdujKPgQrG5BQ6"
+			]
+		}
+	},
+	"version": 1
+}
