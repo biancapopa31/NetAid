@@ -1,1 +1,5 @@
 # FreeSocNet
+
+CE I ASTA? GOL!
+CACA.
+NU E BINE. UNDE INSTRUCTIUNI!?!?
