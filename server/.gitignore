@@ -1,6 +1,10 @@
 node_modules
 .env
 
+#ignore .deps and .states folders
+.deps
+.states
+
 # Hardhat files
 /cache
 /artifacts

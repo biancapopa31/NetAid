@@ -1,6 +1,7 @@
 const { expect } = require("chai");
 const { ethers } = require("hardhat");
 
+
 describe("ContentBase Contract", function () {
   let contentBase;
   let owner, user1;
