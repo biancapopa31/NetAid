@@ -2,8 +2,8 @@ node_modules
 .env
 
 #ignore .deps and .states folders
-.deps
-.states
+../.deps
+../.states
 
 # Hardhat files
 /cache
