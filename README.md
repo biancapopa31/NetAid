@@ -8,12 +8,12 @@ NetAid este o aplicatie cu interfata neteda folosita in promovarea campaniilor u
 Lupta sabii laser
 Tot respectul
 
-Librarie pentru constante si functii pure / generice (Ex Get current date) - astea o sa fie functii external /(internal??) (we hope, we don t really know, i m confused, a lot, **all the time**)  
-Librarie pentru affordability (To ask)  
-Contract parinte pentru postare si comentariu    
-Contract postare si comentariu efectiv  (post: functie external pentru verificare repostable)  
-Contract de Repost (comunicare intre 2 contracte)  (mereu eth se trimite la poster)  
-Trimitere de ETH  
+- [x] Librarie pentru constante si functii pure / generice (Ex Get current date) - astea o sa fie pure internal
+- [ ] Librarie pentru affordability (To ask)  
+- [ ] Contract parinte pentru postare si comentariu    
+- [ ] Contract postare si comentariu efectiv  (post: functie external pentru verificare repostable)  
+- [ ] Contract de Repost (comunicare intre 2 contracte)  (mereu eth se trimite la poster)  
+- [ ] Trimitere de ETH  
 
 Final: 
 INVATAT REACT  

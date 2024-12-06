@@ -1,9 +1,10 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.27;
 
+import "../Libraries/ConstantsLibrary.sol";
+
 contract UserProfile {
 
-    address constant nullAddress = 0x0000000000000000000000000000000000000000;
 
     struct Profile {
         string username;
@@ -35,18 +36,17 @@ contract UserProfile {
 
     modifier validProfile(string memory _username){
         require(bytes(_username).length > 0, "Username is required");
-        require(usernames[_username] == nullAddress, "Username is taken");
+        require(usernames[_username] == Constants.NULL_ADDRESS, "Username is taken");
         _;
     }
 
     /*  FUNCTIONS   */
-
     function existsUser(address _user) external view returns (bool){
         return bytes( profiles[_user].username).length != 0;
     }
 
     function existsUser(string memory _username) external view returns (bool){
-        return usernames[_username] != nullAddress;
+        return usernames[_username] != Constants.NULL_ADDRESS;
     }
 
 
@@ -72,7 +72,7 @@ contract UserProfile {
     function editProfile (string memory username, string memory bio, string memory profilePictureURI
     ) public validProfile(username) {
 
-        usernames[profiles[msg.sender].username] = nullAddress;
+        usernames[profiles[msg.sender].username] = Constants.NULL_ADDRESS;
         profiles[msg.sender] = Profile(username, bio, profilePictureURI);
         usernames[username] = msg.sender;
 

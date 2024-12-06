@@ -1,0 +1,122 @@
+{
+	"compiler": {
+		"version": "0.8.27+commit.40a35a09"
+	},
+	"language": "Solidity",
+	"output": {
+		"abi": [
+			{
+				"inputs": [],
+				"name": "getAllContent",
+				"outputs": [
+					{
+						"components": [
+							{
+								"internalType": "uint256",
+								"name": "id",
+								"type": "uint256"
+							},
+							{
+								"internalType": "string",
+								"name": "contentURI",
+								"type": "string"
+							},
+							{
+								"internalType": "uint256",
+								"name": "timestamp",
+								"type": "uint256"
+							},
+							{
+								"internalType": "address",
+								"name": "creator",
+								"type": "address"
+							}
+						],
+						"internalType": "struct ContentBase.Content[]",
+						"name": "",
+						"type": "tuple[]"
+					}
+				],
+				"stateMutability": "view",
+				"type": "function"
+			},
+			{
+				"inputs": [
+					{
+						"internalType": "uint256",
+						"name": "contentId",
+						"type": "uint256"
+					}
+				],
+				"name": "getContent",
+				"outputs": [
+					{
+						"components": [
+							{
+								"internalType": "uint256",
+								"name": "id",
+								"type": "uint256"
+							},
+							{
+								"internalType": "string",
+								"name": "contentURI",
+								"type": "string"
+							},
+							{
+								"internalType": "uint256",
+								"name": "timestamp",
+								"type": "uint256"
+							},
+							{
+								"internalType": "address",
+								"name": "creator",
+								"type": "address"
+							}
+						],
+						"internalType": "struct ContentBase.Content",
+						"name": "",
+						"type": "tuple"
+					}
+				],
+				"stateMutability": "view",
+				"type": "function"
+			}
+		],
+		"devdoc": {
+			"kind": "dev",
+			"methods": {},
+			"version": 1
+		},
+		"userdoc": {
+			"kind": "user",
+			"methods": {},
+			"version": 1
+		}
+	},
+	"settings": {
+		"compilationTarget": {
+			"server/contracts/ContentBase.sol": "ContentBase"
+		},
+		"evmVersion": "cancun",
+		"libraries": {},
+		"metadata": {
+			"bytecodeHash": "ipfs"
+		},
+		"optimizer": {
+			"enabled": false,
+			"runs": 200
+		},
+		"remappings": []
+	},
+	"sources": {
+		"server/contracts/ContentBase.sol": {
+			"keccak256": "0x9945457c61cd7ebd3c4d44ffd3fef4b4ba6730836f118ab655d8ffe2f5410187",
+			"license": "MIT",
+			"urls": [
+				"bzz-raw://d4c7e838e19dd4a9bb480ad3685b17b82c2c690d5b36830ed14f59c9d4ceb5fa",
+				"dweb:/ipfs/QmVJCvqNU6p9e3sdqT8NneiUvBwgXVJwfnZ5BCK8s5py77"
+			]
+		}
+	},
+	"version": 1
+}

@@ -6,13 +6,7 @@
 	"output": {
 		"abi": [
 			{
-				"inputs": [
-					{
-						"internalType": "address",
-						"name": "contractAddress",
-						"type": "address"
-					}
-				],
+				"inputs": [],
 				"stateMutability": "nonpayable",
 				"type": "constructor"
 			},
@@ -286,42 +280,74 @@
 					}
 				],
 				"name": "createPost",
-				"outputs": [],
-				"stateMutability": "nonpayable",
-				"type": "function"
-			},
-			{
-				"inputs": [
-					{
-						"internalType": "uint256",
-						"name": "postId",
-						"type": "uint256"
-					},
-					{
-						"internalType": "string",
-						"name": "newContentURI",
-						"type": "string"
-					}
-				],
-				"name": "editPost",
-				"outputs": [],
-				"stateMutability": "nonpayable",
-				"type": "function"
-			},
-			{
-				"inputs": [
-					{
-						"internalType": "uint256",
-						"name": "_postId",
-						"type": "uint256"
-					}
-				],
-				"name": "existsPost",
 				"outputs": [
 					{
-						"internalType": "bool",
+						"internalType": "uint256",
 						"name": "",
-						"type": "bool"
+						"type": "uint256"
+					}
+				],
+				"stateMutability": "nonpayable",
+				"type": "function"
+			},
+			{
+				"inputs": [],
+				"name": "getAllContent",
+				"outputs": [
+					{
+						"components": [
+							{
+								"internalType": "uint256",
+								"name": "id",
+								"type": "uint256"
+							},
+							{
+								"internalType": "string",
+								"name": "contentURI",
+								"type": "string"
+							},
+							{
+								"internalType": "uint256",
+								"name": "timestamp",
+								"type": "uint256"
+							},
+							{
+								"internalType": "address",
+								"name": "creator",
+								"type": "address"
+							}
+						],
+						"internalType": "struct ContentBase.Content[]",
+						"name": "",
+						"type": "tuple[]"
+					}
+				],
+				"stateMutability": "view",
+				"type": "function"
+			},
+			{
+				"inputs": [],
+				"name": "getAllPosts",
+				"outputs": [
+					{
+						"internalType": "uint256[]",
+						"name": "",
+						"type": "uint256[]"
+					},
+					{
+						"internalType": "string[]",
+						"name": "",
+						"type": "string[]"
+					},
+					{
+						"internalType": "address[]",
+						"name": "",
+						"type": "address[]"
+					},
+					{
+						"internalType": "uint256[]",
+						"name": "",
+						"type": "uint256[]"
 					}
 				],
 				"stateMutability": "view",
@@ -350,6 +376,47 @@
 				"inputs": [
 					{
 						"internalType": "uint256",
+						"name": "contentId",
+						"type": "uint256"
+					}
+				],
+				"name": "getContent",
+				"outputs": [
+					{
+						"components": [
+							{
+								"internalType": "uint256",
+								"name": "id",
+								"type": "uint256"
+							},
+							{
+								"internalType": "string",
+								"name": "contentURI",
+								"type": "string"
+							},
+							{
+								"internalType": "uint256",
+								"name": "timestamp",
+								"type": "uint256"
+							},
+							{
+								"internalType": "address",
+								"name": "creator",
+								"type": "address"
+							}
+						],
+						"internalType": "struct ContentBase.Content",
+						"name": "",
+						"type": "tuple"
+					}
+				],
+				"stateMutability": "view",
+				"type": "function"
+			},
+			{
+				"inputs": [
+					{
+						"internalType": "uint256",
 						"name": "postId",
 						"type": "uint256"
 					}
@@ -357,13 +424,23 @@
 				"name": "getPost",
 				"outputs": [
 					{
+						"internalType": "uint256",
+						"name": "",
+						"type": "uint256"
+					},
+					{
 						"internalType": "string",
-						"name": "contentURI",
+						"name": "",
 						"type": "string"
 					},
 					{
+						"internalType": "address",
+						"name": "",
+						"type": "address"
+					},
+					{
 						"internalType": "uint256",
-						"name": "timestamp",
+						"name": "",
 						"type": "uint256"
 					}
 				],
@@ -374,12 +451,27 @@
 				"inputs": [
 					{
 						"internalType": "address",
-						"name": "user",
+						"name": "userAddress",
 						"type": "address"
 					}
 				],
-				"name": "getPostsByUser",
+				"name": "getUserPosts",
 				"outputs": [
+					{
+						"internalType": "uint256[]",
+						"name": "",
+						"type": "uint256[]"
+					},
+					{
+						"internalType": "string[]",
+						"name": "",
+						"type": "string[]"
+					},
+					{
+						"internalType": "address[]",
+						"name": "",
+						"type": "address[]"
+					},
 					{
 						"internalType": "uint256[]",
 						"name": "",
@@ -643,19 +735,6 @@
 				"outputs": [],
 				"stateMutability": "nonpayable",
 				"type": "function"
-			},
-			{
-				"inputs": [],
-				"name": "userProfileContract",
-				"outputs": [
-					{
-						"internalType": "contract UserProfile",
-						"name": "",
-						"type": "address"
-					}
-				],
-				"stateMutability": "view",
-				"type": "function"
 			}
 		],
 		"devdoc": {
@@ -810,7 +889,7 @@
 	},
 	"settings": {
 		"compilationTarget": {
-			"server/contracts/Posts.sol": "PostsContract"
+			"server/contracts/Post.sol": "PostsContract"
 		},
 		"evmVersion": "cancun",
 		"libraries": {},
@@ -824,14 +903,6 @@
 		"remappings": []
 	},
 	"sources": {
-		"@openzeppelin/contracts/access/Ownable.sol": {
-			"keccak256": "0xff6d0bb2e285473e5311d9d3caacb525ae3538a80758c10649a4d61029b017bb",
-			"license": "MIT",
-			"urls": [
-				"bzz-raw://8ed324d3920bb545059d66ab97d43e43ee85fd3bd52e03e401f020afb0b120f6",
-				"dweb:/ipfs/QmfEckWLmZkDDcoWrkEvMWhms66xwTLff9DDhegYpvHo1a"
-			]
-		},
 		"@openzeppelin/contracts/interfaces/draft-IERC6093.sol": {
 			"keccak256": "0x880da465c203cec76b10d72dbd87c80f387df4102274f23eea1f9c9b0918792b",
 			"license": "MIT",
@@ -960,28 +1031,36 @@
 				"dweb:/ipfs/QmVUSvooZKEdEdap619tcJjTLcAuH6QBdZqAzWwnAXZAWJ"
 			]
 		},
-		"server/Libraries/AccessLibrary.sol": {
-			"keccak256": "0x4033b19288cc9b8392ed4657069e7334c521ed3c02ec82d140c84824e6cfb695",
+		"server/Libraries/ConstantsLibrary.sol": {
+			"keccak256": "0xafbc9c16c8e345c1fe1c99f8966a95119a2cc78a2dea2904affdf3f49b59834b",
 			"license": "MIT",
 			"urls": [
-				"bzz-raw://f65ca4f9caca793a7b6a1aabfebaed392458065243cfe2f7d7b065fadb5bdf7f",
-				"dweb:/ipfs/QmU3vJyuXvLd459ZJe4zHL9gBo8RiGj56mX6p4og1pYiU1"
+				"bzz-raw://0d742d25c42ee8215009af15436aed6fe21ffeb26913797fed88df017efeee91",
+				"dweb:/ipfs/QmddTAHYhr6kJpqnqbafx8bhBL6fc4ahoXVXy2oDpMNr7d"
 			]
 		},
-		"server/contracts/Posts.sol": {
-			"keccak256": "0xb3fcf01c043447ff33f5fd06b181c06feeb7cc478e30edbb07e508503a9c613d",
+		"server/contracts/ContentBase.sol": {
+			"keccak256": "0x7dc0af3269573aa88b1e3252e45982be63d4ac12439c49f7693f1d6a93953c5e",
 			"license": "MIT",
 			"urls": [
-				"bzz-raw://8b5e7d7030fc35a08c9d0401c8016be3a45663407751036aa2d035102afa691a",
-				"dweb:/ipfs/QmXgcipCDHzpJ5RtWdGpcs8tbGSR2S1zQJby28KT2zjL7o"
+				"bzz-raw://56a430b49f9f516f0404d6cb2fe691dfd36463d3040ad337b8d1d1c5bea77267",
+				"dweb:/ipfs/QmRV3hDR9DM4SHrU6jVR1xvtMXfzdRmrqeJXLCamkVUhf8"
+			]
+		},
+		"server/contracts/Post.sol": {
+			"keccak256": "0xe4944f8ee5303c630a2f6bb9cf345158ddeff13b48ab52db48e3abc5fc0329bf",
+			"license": "MIT",
+			"urls": [
+				"bzz-raw://59cce6f92925c76cd33f35bc4309cd1ec72971cb5c2a590eb470c50d5c5e4a1b",
+				"dweb:/ipfs/QmXaoNc583js6AVZnAv24Ubv82tK7fH6E5LMNN2LfUTd4S"
 			]
 		},
 		"server/contracts/UserProfile.sol": {
-			"keccak256": "0x13f76966a12bc314227a2cff3513d8f17ee405b99ee5334c73d9423a8edb4e02",
+			"keccak256": "0x8ec30541b6563711eebd652b81343b98f334645e063d8acdc062580756b7e177",
 			"license": "MIT",
 			"urls": [
-				"bzz-raw://22c7e611f870b2fb62426b8a83ae16891a82a352a7cc90c3c94c9ad1dd6c3ba1",
-				"dweb:/ipfs/QmVmq6STNKFJmqRi3uUQX458LYgMoQx9Ao97FGwj6au7VU"
+				"bzz-raw://9173ed402615906d2b1dd4eb3f3e0a6c3ad6524360e8bb8d84a06dda41e8c274",
+				"dweb:/ipfs/QmQQ9J2Q2W1ELYQ8i9BAqPriYPS2GUkUyFoQiirVAJcaR1"
 			]
 		}
 	},
