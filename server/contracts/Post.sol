@@ -5,7 +5,7 @@ import "./ContentBase.sol";
 import "@openzeppelin/contracts/token/ERC721/extensions/ERC721Enumerable.sol";
 import "./UserProfile.sol";
 
-contract PostsContract is ContentBase, ERC721Enumerable {
+contract Post is ContentBase, ERC721Enumerable {
     event PostCreated(address indexed creator, uint256 indexed postId, string contentURI);
 
     constructor() ERC721("DecentralizedPost", "DPOST") {}

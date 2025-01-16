@@ -6,7 +6,7 @@ import "./Post.sol";
 
 /*E facut cu gettere*/
 
-contract CommentsContract is ContentBase {
+contract Comment is ContentBase {
 
     // Mapping to link comments to posts
     mapping(uint256 => uint256[]) private postComments;
