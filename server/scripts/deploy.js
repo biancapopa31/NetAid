@@ -3,6 +3,7 @@ const PostModule = require("../ignition/modules/Post");
 const CommentModule = require("../ignition/modules/Comment");
 const hre =  require("hardhat");
 const saveDeployment = require("../ignition/utils/saveDeployment");
+const copyABI = require("../ignition/utils/copyABI");
 
 async function main() {
     // Compile contracts before deploying
@@ -34,6 +35,7 @@ async function deploy(contractModule) {
 
     // Save the deployment details
     saveDeployment(hre.network.name, contractName, contractAddress);
+    copyABI(contractName);
 }
 
 function getContractAddress(obj) {
