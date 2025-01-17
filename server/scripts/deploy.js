@@ -5,6 +5,7 @@ const hre =  require("hardhat");
 const saveDeployment = require("../ignition/utils/saveDeployment");
 const copyABI = require("../ignition/utils/copyABI");
 
+// TODO: add dummy data
 async function main() {
     // Compile contracts before deploying
     await hre.run("compile");
