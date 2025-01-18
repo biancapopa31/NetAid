@@ -1,5 +1,6 @@
 import React, {ReactNode, useContext, useEffect, useState} from "react";
 import {useUser} from "@clerk/clerk-react";
+import {useContracts} from "./ContractsContext";
 
 interface UserDetails {
     accountInitialized: boolean;
@@ -34,20 +35,35 @@ export const UserDetailsProvider: React.FC<UserDetailsProviderProps> = ({ childr
    const [username, setUsername] = useState<string>();
    const [bio, setBio] = useState<string>('');
    const [profilePictureUri, setProfilePictureUri] = useState<string>('');
+   const {userProfileContract} = useContracts();
 
     const { user } = useUser();
 
     useEffect(() => {
-        if (user) {
+        if (user && accountInitialized) {
             const userAddress = user.primaryWeb3Wallet;
+            console.log("Inainte de fetchAndStoreUserDetails");
             fetchAndStoreUserDetails(userAddress)
                 .then((res) => console.log(res))
                 .catch((err) => console.log(err));
         }
-    }, [user]);
+    }, [user, accountInitialized]);
 
+    useEffect(() => {
+        if(userProfileContract){
+            checkUser();
+        }
+    }, [userProfileContract]);
+
+    const checkUser = async () => {
+        const exists = await userProfileContract.existsUser();
+        setAccountInitialized(exists);
+    }
+
+//TODO see why i can't use user address as parameter
+// TODO: finish fetch user data
     const fetchAndStoreUserDetails = async (userAddress) => {
-
+        const profile = userProfileContract.getProfile(userAddress);
     };
 
     return (
@@ -56,7 +72,7 @@ export const UserDetailsProvider: React.FC<UserDetailsProviderProps> = ({ childr
             username, setUsername,
             bio, setBio,
             profilePictureUri, setProfilePictureUri,
-            }}>
+        } as UserDetails}>
             {children}
         </UserDetailsContext.Provider>
     );

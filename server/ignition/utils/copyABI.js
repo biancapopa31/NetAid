@@ -7,7 +7,7 @@ const copyABI = (contractName) => {
 
     if (fs.existsSync(source)) {
         const { abi } = JSON.parse(fs.readFileSync(source, "utf-8"));
-        fs.writeFileSync(destination, JSON.stringify({ abi }, null, 2));
+        fs.writeFileSync(destination, JSON.stringify(abi , null, 2));
         console.log(`${contractName} ABI copied to frontend.`);
     } else {
         console.error(`ABI for ${contractName} not found.`);
@@ -15,5 +15,3 @@ const copyABI = (contractName) => {
 };
 
 module.exports = copyABI;
-
-copyABI("UserProfile");

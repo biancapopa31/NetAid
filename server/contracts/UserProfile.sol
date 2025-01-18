@@ -41,11 +41,12 @@ contract UserProfile {
     }
 
     /*  FUNCTIONS   */
-    function existsUser(address _user) external view returns (bool){
-        return bytes( profiles[_user].username).length != 0;
+    function existsUser() external view returns (bool){
+        return bytes( profiles[msg.sender].username).length != 0;
     }
 
-    function existsUser(string memory _username) external view returns (bool){
+
+    function existsUserByUserId(string memory _username) external view returns (bool){
         return usernames[_username] != Constants.NULL_ADDRESS;
     }
 

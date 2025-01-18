@@ -10,6 +10,7 @@ import {useNavigate} from "react-router";
 import {SignInPage} from "./pages/SignInPage";
 import {AppRoutes} from "./routes/AppRoutes";
 import {UserDetailsProvider} from "./contexts/UserDetailsContext";
+import {ContractsProvider} from "./contexts/ContractsContext";
 
 function App() {
 
@@ -21,9 +22,11 @@ function App() {
                 <SignInPage/>
             </SignedOut>
             <SignedIn>
-                <UserDetailsProvider>
-                    <AppRoutes/>
-                </UserDetailsProvider>
+                <ContractsProvider>
+                    <UserDetailsProvider>
+                        <AppRoutes/>
+                    </UserDetailsProvider>
+                </ContractsProvider>
             </SignedIn>
         </ClerkProvider >
     );

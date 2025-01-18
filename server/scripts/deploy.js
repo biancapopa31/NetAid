@@ -35,7 +35,7 @@ async function deploy(contractModule) {
     }
 
     // Save the deployment details
-    saveDeployment(hre.network.name, contractName, contractAddress);
+    saveDeployment(contractName, contractAddress);
     copyABI(contractName);
 }
 
