@@ -5,6 +5,8 @@ const hre =  require("hardhat");
 const saveDeployment = require("../ignition/utils/saveDeployment");
 const copyABI = require("../ignition/utils/copyABI");
 
+// !!! INAINTE DE DEPLOY SA STERGEM FOLDERELE ARTIFACTS CACHE SI CHAIN-31337 !!!
+
 // TODO: add dummy data
 async function main() {
     // Compile contracts before deploying
@@ -27,7 +29,7 @@ async function deploy(contractModule) {
     const parsedDeployment = JSON.parse(deploymentJSON);
 
     const contractAddress = getContractAddress(parsedDeployment);
-
+    // console.log(deployments.userProfile?.target);
     console.log(`${contractName} deployed to: ${contractAddress}`);
     if(!contractAddress){
         console.error("Could not find deployment address");

@@ -4,7 +4,7 @@ import {useEffect} from "react";
 
 export const DecisionPage = () => {
     const navigate = useNavigate();
-    const {accountInitialized} = useUserDetails()
+    const {accountInitialized, setAccountInitialized, setBio, bio, username, setUsername} = useUserDetails()
 
     useEffect(() => {
         if (accountInitialized){

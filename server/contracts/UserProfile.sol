@@ -41,7 +41,13 @@ contract UserProfile {
     }
 
     /*  FUNCTIONS   */
-    function existsUser() external view returns (bool){
+
+     function test() public pure returns(string memory){
+        return "This is a test from UserProfile contract";
+    }
+
+
+        function existsUser() external view returns (bool){
         return bytes( profiles[msg.sender].username).length != 0;
     }
 
@@ -61,23 +67,25 @@ contract UserProfile {
     }
 
     function createNewProfile(string memory username, string memory bio, string memory profilePictureURI
-    ) public profileDoesNotExist validProfile(username) {
+    ) public profileDoesNotExist validProfile(username) returns (bool) {
 
         profiles[msg.sender] = Profile(username, bio, profilePictureURI);
         userAddresses.push(msg.sender);
         usernames[username] = msg.sender;
 
         emit ProfileCreated(msg.sender, username, bio, profilePictureURI);
+        return true;
     }
 
     function editProfile (string memory username, string memory bio, string memory profilePictureURI
-    ) public validProfile(username) {
+    ) public validProfile(username) returns (bool) {
 
         usernames[profiles[msg.sender].username] = Constants.NULL_ADDRESS;
         profiles[msg.sender] = Profile(username, bio, profilePictureURI);
         usernames[username] = msg.sender;
 
         emit ProfileUpdated(msg.sender, username, bio, profilePictureURI);
+        return true;
     }
 
 }

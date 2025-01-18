@@ -1,5 +1,5 @@
 import React, {Provider, ReactNode, useContext, useEffect, useState} from "react";
-import {ethers, BrowserProvider, Network, Contract, Eip1193Provider} from "ethers";
+import {ethers, BrowserProvider, Network, Contract, Eip1193Provider, Signer, JsonRpcSigner} from "ethers";
 import deployment from '../utils/deployment.json'
 import UserProfile from "../abi/UserProfile.json";
 import Post from "../abi/Post.json";
@@ -8,6 +8,8 @@ import Comment from "../abi/Comment.json";
 interface ContractsProps {
     provider: BrowserProvider | null;
     setProvider:React.Dispatch<React.SetStateAction<BrowserProvider>>;
+    signer: JsonRpcSigner | null;
+    setSigner:React.Dispatch<React.SetStateAction<JsonRpcSigner>>;
     userProfileContract: Contract | null;
     setUserProfileContract:React.Dispatch<React.SetStateAction<Contract>>;
     postsContract: Contract | null;
@@ -20,6 +22,8 @@ interface ContractsProps {
 const initialState: ContractsProps = {
     provider: null,
     setProvider: () => {},
+    signer: null,
+    setSigner: () => {},
     userProfileContract: null,
     setUserProfileContract: () => {},
     postsContract: null,
@@ -37,6 +41,7 @@ interface ContractsProviderProps {
 
 export const ContractsProvider: React.FC<ContractsProviderProps> = ({ children }) => {
     const [provider, setProvider] = useState<BrowserProvider>();
+    const [signer, setSigner] = useState<JsonRpcSigner>();
     const [userProfileContract, setUserProfileContract] = useState<Contract>();
     const [postsContract, setPostsContract] = useState<Contract>();
     const [commentsContract, setCommentsContract] = useState<Contract>();
@@ -46,23 +51,36 @@ export const ContractsProvider: React.FC<ContractsProviderProps> = ({ children }
         console.log("in Contracts context");
 
         const provider = new ethers.BrowserProvider(window.ethereum as Eip1193Provider);
-        setProvider(provider);
         console.log("Provider :", provider);
+        setProvider(provider);
 
-        const userProfileAddress = deployment.UserProfile;
-        console.log("User Profile address:", userProfileAddress);
-        const userProfileContract = new ethers.Contract(userProfileAddress, UserProfile, provider);
-        setUserProfileContract(userProfileContract);
-        console.log("User Profile contract:", userProfileContract);
-
-        const postAddress = deployment.Post;
-        const postsContract = new ethers.Contract(postAddress, Post, provider);
-        setPostsContract(postsContract);
-
-        const commentAddress = deployment.Comment;
-        const commentsContract = new ethers.Contract(commentAddress, Comment, provider);
-        setCommentsContract(commentsContract);
+        getAndSetSigner(provider)
     }, []);
+
+    useEffect(() => {
+        if(signer){
+            const userProfileAddress = deployment.UserProfile;
+            const userProfileContract = new ethers.Contract(userProfileAddress, UserProfile, signer);
+            setUserProfileContract(userProfileContract);
+
+            const postAddress = deployment.Post;
+            const postsContract = new ethers.Contract(postAddress, Post, signer);
+            setPostsContract(postsContract);
+
+            const commentAddress = deployment.Comment;
+            const commentsContract = new ethers.Contract(commentAddress, Comment, signer);
+            setCommentsContract(commentsContract);
+        }
+    }, [signer]);
+
+    const getAndSetSigner = async (provider) => {
+        const network = await provider.getNetwork();
+        console.log("Connected to network:", network);
+
+        const signer = await provider.getSigner();
+        console.log("Signer:", signer);
+        setSigner(signer);
+    };
 
 
     return (

@@ -7,17 +7,29 @@ import {Addressable, AddressLike} from "ethers";
 export function HomePage() {
     const { user } = useUser()
     const primaryWeb3Wallet = user?.primaryWeb3Wallet
-    const {userProfileContract} = useContracts()
+    const {userProfileContract, postsContract} = useContracts()
 
     useEffect(() => {
         console.log("User profile in home0:", userProfileContract);
+        console.log("Post contract in home0:", postsContract);
         f();
 
-    }, [userProfileContract]);
+    }, [userProfileContract, postsContract]);
     const f = async () =>{
         if(userProfileContract){
             const test = await userProfileContract.existsUser();
-            console.log(test);
+            console.log("Exist user in", test);
+        }
+        if(postsContract){
+            console.log("in if", postsContract);
+            // const test = await postsContract.getAllPosts();
+            console.log(await postsContract.getAllPosts());
+            // postsContract.getAllPosts().then((posts) => {
+            //     console.log("pusi",posts);
+            // }).catch((err) => {
+            //     console.error(err);
+            // })
+            // console.log("apel la postsContract",test);
         }
 
     };

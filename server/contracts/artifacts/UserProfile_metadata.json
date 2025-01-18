@@ -86,7 +86,13 @@
 					}
 				],
 				"name": "createNewProfile",
-				"outputs": [],
+				"outputs": [
+					{
+						"internalType": "bool",
+						"name": "",
+						"type": "bool"
+					}
+				],
 				"stateMutability": "nonpayable",
 				"type": "function"
 			},
@@ -109,18 +115,18 @@
 					}
 				],
 				"name": "editProfile",
-				"outputs": [],
+				"outputs": [
+					{
+						"internalType": "bool",
+						"name": "",
+						"type": "bool"
+					}
+				],
 				"stateMutability": "nonpayable",
 				"type": "function"
 			},
 			{
-				"inputs": [
-					{
-						"internalType": "string",
-						"name": "_username",
-						"type": "string"
-					}
-				],
+				"inputs": [],
 				"name": "existsUser",
 				"outputs": [
 					{
@@ -135,12 +141,12 @@
 			{
 				"inputs": [
 					{
-						"internalType": "address",
-						"name": "_user",
-						"type": "address"
+						"internalType": "string",
+						"name": "_username",
+						"type": "string"
 					}
 				],
-				"name": "existsUser",
+				"name": "existsUserByUserId",
 				"outputs": [
 					{
 						"internalType": "bool",
@@ -199,6 +205,19 @@
 				],
 				"stateMutability": "view",
 				"type": "function"
+			},
+			{
+				"inputs": [],
+				"name": "test",
+				"outputs": [
+					{
+						"internalType": "string",
+						"name": "",
+						"type": "string"
+					}
+				],
+				"stateMutability": "pure",
+				"type": "function"
 			}
 		],
 		"devdoc": {
@@ -237,11 +256,11 @@
 			]
 		},
 		"server/contracts/UserProfile.sol": {
-			"keccak256": "0xdc05a728861f3be58c32860c561c2da808b3f9956cbd8810e7faa4cab24204fc",
+			"keccak256": "0xffb68f293e7794b68637789043c9349ee3b38cd478e5135cc40fe96bab746eed",
 			"license": "MIT",
 			"urls": [
-				"bzz-raw://4efa4848f1d30bc69e7662b8d43462f2e061a36dfa9d6311cf2899a837cccac0",
-				"dweb:/ipfs/QmVVdET7epyffhAfiwuac8st1JuZeChtZYjgpLiKbLMkhV"
+				"bzz-raw://76030c549c48978a63014cc122380138677674a20d7e60ed438e72b79e21402b",
+				"dweb:/ipfs/QmV1HTLPJhgyVcE2GEL9bgWZBAtyftwVLGapNHUskQhJvZ"
 			]
 		}
 	},

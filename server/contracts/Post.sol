@@ -10,6 +10,10 @@ contract Post is ContentBase, ERC721Enumerable {
 
     constructor() ERC721("DecentralizedPost", "DPOST") {}
 
+    function test() public pure returns(string memory){
+        return "This is a test from Post contract";
+    }
+
     function createPost(string memory contentURI) public notEmptyURI(contentURI) returns (uint256) {
         uint256 postId = _createContent(contentURI);
 

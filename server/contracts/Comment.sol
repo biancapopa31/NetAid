@@ -16,6 +16,10 @@ contract Comment is ContentBase {
 
     /* FUNCTIONS */
 
+     function test() public pure returns(string memory){
+        return "This is a test from Comment contract";
+    }
+
     // Create a new comment for a specific post
     function createComment(string memory contentURI, uint256 postId) public notEmptyURI(contentURI) returns (uint256) {
         uint256 commentId = _createContent(contentURI);
