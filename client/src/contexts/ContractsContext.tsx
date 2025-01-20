@@ -87,9 +87,9 @@ export const ContractsProvider: React.FC<ContractsProviderProps> = ({ children }
         <ContractsContext.Provider value={{
             provider, setProvider,
             signer, setSigner,
-            userProfileContract, setUserProfileContract,
-            postsContract, setPostsContract,
-            commentsContract, setCommentsContract,
+            userProfileContract,
+            postsContract,
+            commentsContract,
         } as ContractsProps}>
             {children}
         </ContractsContext.Provider>

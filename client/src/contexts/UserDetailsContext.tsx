@@ -1,4 +1,4 @@
-import React, {ReactNode, useContext, useEffect, useState} from "react";
+import React, {ReactNode, useCallback, useContext, useEffect, useState} from "react";
 import {useUser} from "@clerk/clerk-react";
 import {useContracts} from "./ContractsContext";
 import {ethers} from "ethers";
@@ -44,17 +44,27 @@ export const UserDetailsProvider: React.FC<UserDetailsProviderProps> = ({ childr
    const [profilePictureUrl, setProfilePictureUrl] = useState<string>('');
    const {userProfileContract, signer} = useContracts();
 
-    const checkUser = async () => {
+    const checkUser = useCallback(async () => {
         try {
             const exists = await userProfileContract.existsUser();
             setAccountInitialized(exists);
         }catch (err){
             console.error("Can't verify user", err);
         }
-    }
+    }, [userProfileContract, signer, setAccountInitialized]);
 
-    const fetchAndStoreUserDetails = async () => {
+    useEffect(() => {
+        console.log(username);
+    }, [username]);
+
+    useEffect(() => {
+        console.log("signer", signer);
+    }, [signer]);
+
+    const fetchAndStoreUserDetails = useCallback(async () => {
             const profile = await userProfileContract.getProfile(signer);
+
+            console.log(profile)
             setUsername(profile[0]);
             setBio(profile[1]);
 
@@ -64,20 +74,20 @@ export const UserDetailsProvider: React.FC<UserDetailsProviderProps> = ({ childr
             // const profilePictureUrl = await pinata.gateways.convert(profilePictureCdi);
         // TODO: remove hardcoding
             setProfilePictureUrl("https://gray-ready-gayal-243.mypinata.cloud/ipfs/bafkreielw242z5adle6zcqeml5k3vz3gwgsurvf3w7hnbgvtartlxauezy");
-    };
+    }, [userProfileContract, signer, setUsername, setBio, setProfilePictureUrl, setProfilePictureCdi]);
 
     useEffect(() => {
         if (accountInitialized) {
             fetchAndStoreUserDetails()
                 .catch((err) => console.log(err));
         }
-    }, [accountInitialized]);
+    }, [fetchAndStoreUserDetails, accountInitialized]);
 
     useEffect(() => {
         if(userProfileContract){
             checkUser();
         }
-    }, [userProfileContract]);
+    }, [signer, checkUser, userProfileContract]);
 
     return (
         <UserDetailsContext.Provider value={{

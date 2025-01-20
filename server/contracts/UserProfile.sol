@@ -36,7 +36,7 @@ contract UserProfile {
 
     modifier validProfile(string memory _username){
         require(bytes(_username).length > 0, "Username is required");
-        require(usernames[_username] == Constants.NULL_ADDRESS, "Username is taken");
+        require(usernames[_username] == Constants.NULL_ADDRESS || usernames[_username] == msg.sender, "Username is taken");
         _;
     }
 

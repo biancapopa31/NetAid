@@ -25,15 +25,10 @@ export function NewAccountPage() {
     const [selectedFile, setSelectedFile] = useState<File | null>(null);
     const {userProfileContract} = useContracts();
     const [usernameTaken, setUsernameTaken] = useState(false);
-    const {setUsername, setBio, setAccountInitialized, setProfilePictureCdi, accountInitialized} = useUserDetails();
+    const {setUsername, setBio, setAccountInitialized, setProfilePictureCdi, accountInitialized, setProfilePictureUrl, profilePictureCdi} = useUserDetails();
     const navigate = useNavigate();
 
-    // Handle file selection
-    const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-        const file = event.target.files ? event.target.files[0] : null;
-        setSelectedFile(file);
-    };
-
+    // TODO: see why user state doesn't update after creating a new user.
     const handleSubmit = async (values) =>{
         setUsernameTaken( await userProfileContract.existsUserByUserId(values.username));
 
@@ -46,21 +41,28 @@ export function NewAccountPage() {
             try{
                 const upload = await pinata.upload.file(selectedFile);
 
-                await userProfileContract.createNewProfile(values.username, values.bio, upload.IpfsHash);
+                const tx = await userProfileContract.createNewProfile(values.username, values.bio, upload.IpfsHash);
+                await tx.wait();
                 setProfilePictureCdi(upload.IpfsHash);
+
+                const profilePictureUrl = await pinata.gateways.convert(profilePictureCdi);
+                setProfilePictureUrl(profilePictureUrl);
             }catch(err){
                 console.error("There was an error creating the account",err);
                 return;
             }
         }else {
             try {
-                await userProfileContract.createNewProfile(values.username, values.bio, '');
+                console.log("sug");
+                const tx = await userProfileContract.createNewProfile(values.username, values.bio, '');
+                await tx.wait();
 
             }catch(err){
                 console.error("There was an error creating the account",err);
                 return;
             }
         }
+        console.log(values);
         setUsername(values.username);
         setBio(values.bio);
         setAccountInitialized(true);
