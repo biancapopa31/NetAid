@@ -25,7 +25,7 @@ export function NewAccountPage() {
     const [selectedFile, setSelectedFile] = useState<File | null>(null);
     const {userProfileContract} = useContracts();
     const [usernameTaken, setUsernameTaken] = useState(false);
-    const {setUsername, setBio, setAccountInitialized, setProfilePictureCdi} = useUserDetails();
+    const {setUsername, setBio, setAccountInitialized, setProfilePictureCdi, accountInitialized} = useUserDetails();
     const navigate = useNavigate();
 
     // Handle file selection
@@ -47,21 +47,23 @@ export function NewAccountPage() {
                 const upload = await pinata.upload.file(selectedFile);
 
                 await userProfileContract.createNewProfile(values.username, values.bio, upload.IpfsHash);
-                setUsername(values.username);
-                setBio(values.bio);
                 setProfilePictureCdi(upload.IpfsHash);
-                setAccountInitialized(true);
             }catch(err){
                 console.error("There was an error creating the account",err);
+                return;
             }
-
         }else {
-            await userProfileContract.createNewProfile(values.username, values.bio, '');
-            setUsername(values.username);
-            setBio(values.bio);
-            setAccountInitialized(true);
+            try {
+                await userProfileContract.createNewProfile(values.username, values.bio, '');
 
+            }catch(err){
+                console.error("There was an error creating the account",err);
+                return;
+            }
         }
+        setUsername(values.username);
+        setBio(values.bio);
+        setAccountInitialized(true);
         navigate("/home");
 
     }

@@ -2,8 +2,8 @@ import React from 'react';
 import ReactDOM from 'react-dom/client';
 import './index.css';
 import App from './App';
-import {ClerkProvider} from "@clerk/clerk-react";
 import {BrowserRouter} from 'react-router-dom';
+import {HeroUIProvider} from "@heroui/system";
 
 const root = ReactDOM.createRoot(
     document.getElementById('root') as HTMLElement
@@ -13,7 +13,11 @@ const root = ReactDOM.createRoot(
 root.render(
   <React.StrictMode>
       <BrowserRouter>
-          <App />
+          <HeroUIProvider>
+              <main className="light text-foreground bg-background">
+                <App />
+              </main>
+          </HeroUIProvider>
       </BrowserRouter>
   </React.StrictMode>
 );
