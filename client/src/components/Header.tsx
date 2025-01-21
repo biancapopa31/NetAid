@@ -32,9 +32,9 @@ export function Header() {
                             isBordered
                             as="button"
                             className="transition-transform"
-                            color="secondary"
+                            color="primary"
                             name={username}
-                            size="sm"
+                            size="md"
                             src={profilePictureUrl }
                         />
                             : <Skeleton/>

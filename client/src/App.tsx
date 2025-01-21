@@ -11,24 +11,28 @@ import {SignInPage} from "./pages/SignInPage";
 import {AppRoutes} from "./routes/AppRoutes";
 import {UserDetailsProvider} from "./contexts/UserDetailsContext";
 import {ContractsProvider} from "./contexts/ContractsContext";
+import {LoaderPovider, useLoader} from "./contexts/LoaderContext";
+import {Spinner} from "@heroui/react";
 
 function App() {
 
     const {navigate} = useNavigate();
-
     return (
-        <ClerkProvider publishableKey={process.env.REACT_APP_CLERK_PUBLISHABLE_KEY as string} navigate = {(to) => navigate(to)}>
+        <ClerkProvider publishableKey={process.env.REACT_APP_CLERK_PUBLISHABLE_KEY as string}
+                       navigate={(to) => navigate(to)}>
             <SignedOut>
                 <SignInPage/>
             </SignedOut>
             <SignedIn>
                 <ContractsProvider>
                     <UserDetailsProvider>
-                        <AppRoutes/>
+                        <LoaderPovider>
+                            <AppRoutes/>
+                        </LoaderPovider>
                     </UserDetailsProvider>
                 </ContractsProvider>
             </SignedIn>
-        </ClerkProvider >
+        </ClerkProvider>
     );
 }
 

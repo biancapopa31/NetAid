@@ -47,7 +47,7 @@ contract UserProfile {
     }
 
 
-        function existsUser() external view returns (bool){
+    function existsUser() external view returns (bool){
         return bytes( profiles[msg.sender].username).length != 0;
     }
 
@@ -57,12 +57,12 @@ contract UserProfile {
     }
 
 
-    function getProfile(address user) public view returns (Profile memory){
+    function getProfile(address user) external view returns (Profile memory){
         return profiles[user];
     }
 
 
-    function getAllUsersAddrs() public view returns ( address[] memory){
+    function getAllUsersAddrs() external view returns ( address[] memory){
         return userAddresses;
     }
 
@@ -78,7 +78,7 @@ contract UserProfile {
     }
 
     function editProfile (string memory username, string memory bio, string memory profilePictureCdi
-    ) public validProfile(username) returns (bool) {
+    ) public  validProfile(username) returns (bool) {
 
         usernames[profiles[msg.sender].username] = Constants.NULL_ADDRESS;
         profiles[msg.sender] = Profile(username, bio, profilePictureCdi);

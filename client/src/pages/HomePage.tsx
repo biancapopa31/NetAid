@@ -2,10 +2,10 @@ import {SignOutButton, UserButton, useUser} from "@clerk/clerk-react";
 import React, {useEffect} from "react";
 import {NavLink, Outlet} from "react-router-dom";
 import {useContracts} from "../contexts/ContractsContext";
-import {Addressable, AddressLike} from "ethers";
 import {useUserDetails} from "../contexts/UserDetailsContext";
 import {Header} from "../components/Header";
-import {Image} from "@heroui/react";
+import {useLoader} from "../contexts/LoaderContext";
+import {Spinner} from "@heroui/react";
 
 export function HomePage() {
     const { user } = useUser();
@@ -13,18 +13,19 @@ export function HomePage() {
     const {userProfileContract, postsContract} = useContracts();
     const {username, bio, profilePictureCdi, accountInitialized, profilePictureUrl} = useUserDetails();
 
+    const {isLoading} = useLoader();
+
+    if(isLoading){
+        return (
+            <Spinner color={"primary"} className={"flex justify-center items-center"}/>
+        );
+    }
 
     return (
         <>
             <Header/>
             <main style={{padding: '1rem'}}>
                 <Outlet/>
-                <SignOutButton/>
-                <Image
-                    src={profilePictureUrl}
-                >
-
-                </Image>
             </main>
         </>
     )

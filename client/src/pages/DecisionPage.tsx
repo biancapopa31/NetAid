@@ -1,6 +1,7 @@
 import {useNavigate} from "react-router";
 import {useUserDetails} from "../contexts/UserDetailsContext";
-import {useEffect} from "react";
+import React, {useEffect} from "react";
+import {Spinner} from "@heroui/react";
 
 export const DecisionPage = () => {
     const navigate = useNavigate();
@@ -18,6 +19,6 @@ export const DecisionPage = () => {
     }, [accountInitialized]);
 
     return (
-        <p>Decision Page</p>
+        <Spinner color={"primary"} className={"flex justify-center items-center"}/>
     );
 }

@@ -3,6 +3,7 @@ import {useUser} from "@clerk/clerk-react";
 import {useContracts} from "./ContractsContext";
 import {ethers} from "ethers";
 import {pinata} from "../utils/config";
+import {useLoader} from "./LoaderContext";
 
 interface UserDetails {
     accountInitialized: boolean|null;
@@ -57,7 +58,7 @@ export const UserDetailsProvider: React.FC<UserDetailsProviderProps> = ({ childr
     const fetchAndStoreUserDetails = useCallback(async () => {
             const profile = await userProfileContract.getProfile(signer);
 
-            console.log(profile)
+            console.log("in fetchAndStore", profile);
             setUsername(profile[0]);
             setBio(profile[1]);
 
@@ -67,6 +68,7 @@ export const UserDetailsProvider: React.FC<UserDetailsProviderProps> = ({ childr
             // const profilePictureUrl = await pinata.gateways.convert(profilePictureCdi);
         // TODO: remove hardcoding
             setProfilePictureUrl("https://gray-ready-gayal-243.mypinata.cloud/ipfs/bafkreielw242z5adle6zcqeml5k3vz3gwgsurvf3w7hnbgvtartlxauezy");
+            console.log("afterSetProfilePicture" );
     }, [userProfileContract, signer, setUsername, setBio, setProfilePictureUrl, setProfilePictureCdi]);
 
     useEffect(() => {

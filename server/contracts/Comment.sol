@@ -11,7 +11,6 @@ contract Comment is ContentBase {
     // Mapping to link comments to posts
     mapping(uint256 => uint256[]) private postComments;
 
-
     event CommentCreated(address indexed creator, uint256 indexed commentId, string text);
 
     /* FUNCTIONS */
