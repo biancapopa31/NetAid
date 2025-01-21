@@ -10,6 +10,9 @@ contract ContentBase {
         uint256 timestamp;
         address creator;
     }
+    
+    mapping (uint => mapping (address => bool)) private _isLiker; // _isLiker[contentId][userAddress] = true if userAddress liked contentId;
+    mapping (uint => uint) private likeCount; // mapping from contentId to nr of likes
 
     Content[] private  content_list;
     uint256 internal nextContentId = 0;
@@ -23,25 +26,45 @@ contract ContentBase {
         uint256 contentId = nextContentId;
         nextContentId++;
 
-        content_list.push( Content({
-            id: contentId,
-            text: text,
-            photoCid: photoCid,
-            timestamp: block.timestamp,
-            creator: msg.sender
-        }));
+        content_list.push( Content(
+            uint256(contentId), 
+            text=text, 
+            photoCid, 
+            block.timestamp, 
+            msg.sender
+        ));
 
         return contentId;
     }
 
-    function getContent(uint256 contentId) public view returns (Content memory) {
+    function getContent(uint256 contentId) internal view returns (Content memory) {
         require(bytes(content_list[contentId].text).length > 0, "Content does not exist");
         return content_list[contentId];
     }
 
-    function getAllContent() public view returns (Content[] memory)  {
-        return content_list;
+    function like(uint256 contentId) public  returns (uint){
+        _isLiker[contentId][msg.sender] = true;
+        likeCount[contentId]++;
+        return likeCount[contentId];
+    }
 
+    function unlike(uint256 contentId) public  returns (uint){
+        require(likeCount[contentId] > 0, "This post dosen't have any likes");
+        _isLiker[contentId][msg.sender] = false;
+        likeCount[contentId]--;
+        return likeCount[contentId];
+    }
+
+    function getLikeCount(uint contentId) public  view  returns (uint){
+        return likeCount[contentId];
+    }
+
+    function isLikedByUser(uint contentId, address userAddress) internal view returns (bool) {
+        return _isLiker[contentId][userAddress];
+    }
+    
+    function getAllContent() internal view returns (Content[] memory)  {
+        return content_list;
     }
 
 }
