@@ -12,7 +12,7 @@ contract Comment is ContentBase {
     mapping(uint256 => uint256[]) private postComments;
 
 
-    event CommentCreated(address indexed creator, uint256 indexed commentId, string contentURI);
+    event CommentCreated(address indexed creator, uint256 indexed commentId, string text);
 
     /* FUNCTIONS */
 
@@ -21,11 +21,11 @@ contract Comment is ContentBase {
     }
 
     // Create a new comment for a specific post
-    function createComment(string memory contentURI, uint256 postId) public notEmptyURI(contentURI) returns (uint256) {
-        uint256 commentId = _createContent(contentURI);
+    function createComment(string memory text, uint256 postId) public notEmpty(text, '') returns (uint256) {
+        uint256 commentId = createContent(text, '');
         postComments[postId].push(commentId);
 
-        emit CommentCreated(msg.sender, commentId, contentURI);
+        emit CommentCreated(msg.sender, commentId, text);
         return commentId;
     }
 
@@ -36,18 +36,18 @@ contract Comment is ContentBase {
         require( commentCount> 0, "No comments for this post");
 
         uint256[] memory commentIds = new uint256[](commentCount);
-        string[] memory contentURIs = new string[](commentCount);
+        string[] memory texts = new string[](commentCount);
         address[] memory creators = new address[](commentCount);
         uint256[] memory timestamps = new uint256[](commentCount);
 
         for (uint256 i = 0; i < commentCount; i++) {
             Content memory c = getContent(postComments[postId][i]);
             commentIds[i] = c.id;
-            contentURIs[i] = c.contentURI;
+            texts[i] = c.text;
             creators[i] = c.creator; 
             timestamps[i] = c.timestamp;
         }
-        return (commentIds, contentURIs, creators, timestamps);
+        return (commentIds, texts, creators, timestamps);
     }
     
     // Retrieve comment details
@@ -55,7 +55,7 @@ contract Comment is ContentBase {
         returns (uint256, string memory, address, uint256) 
     {
         Content memory c = getContent(commentId);
-        return (commentId, c.contentURI, c.creator, c.timestamp);
+        return (commentId, c.text, c.creator, c.timestamp);
     }
 
     function getNextContentId() public view returns (uint256) {

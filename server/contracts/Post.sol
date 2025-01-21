@@ -6,7 +6,7 @@ import "@openzeppelin/contracts/token/ERC721/extensions/ERC721Enumerable.sol";
 import "./UserProfile.sol";
 
 contract Post is ContentBase, ERC721Enumerable {
-    event PostCreated(address indexed creator, uint256 indexed postId, string contentURI);
+    event PostCreated(address indexed creator, uint256 indexed postId, string text, string photoCid);
 
     constructor() ERC721("DecentralizedPost", "DPOST") {}
 
@@ -14,43 +14,46 @@ contract Post is ContentBase, ERC721Enumerable {
         return "This is a test from Post contract";
     }
 
-    function createPost(string memory contentURI) public notEmptyURI(contentURI) returns (uint256) {
-        uint256 postId = _createContent(contentURI);
+    function createPost(string memory text, string memory photoCid) public notEmpty(text, photoCid) returns (uint256) {
+        uint256 postId = createContent(text, photoCid);
 
         // Mint an NFT for the post
         _mint(msg.sender, postId);
 
-        emit PostCreated(msg.sender, postId, contentURI);
+        emit PostCreated(msg.sender, postId, text, photoCid);
         return postId;
     }
 
-    function getPost(uint256 postId) public view returns (uint256 , string memory, address, uint256 ) {
+    function getPost(uint256 postId) public view returns (uint256 , string memory, string memory, address, uint256 ) {
         Content memory c = getContent(postId);
-        return (postId, c.contentURI, c.creator, c.timestamp);
+        return (postId, c.text, c.photoCid, c.creator, c.timestamp);
     }
 
     function getAllPosts() public view returns ( uint256[] memory, string[] memory, address[] memory, uint256[] memory) {
 
         uint256 postCount = nextContentId;
         uint256[] memory postIds = new uint256[](postCount);
-        string[] memory contentURIs = new string[](postCount);
+        string[] memory texts = new string[](postCount);
+        string[] memory photoCids = new string[](postCount);
         address[] memory creators = new address[](postCount);
         uint256[] memory timestamps = new uint256[](postCount);
 
         for (uint256 i = 0; i < postCount; i++) {
             Content memory c = getContent(i);
             postIds[i] = c.id;
-            contentURIs[i] = c.contentURI;
+            texts[i] = c.text;
+            photoCids[i] = c.photoCid;
             creators[i] = c.creator; 
             timestamps[i] = c.timestamp;
         }
-        return (postIds, contentURIs, creators, timestamps);
+        return (postIds, texts, creators, timestamps);
     }
 
-    function getUserPosts(address userAddress) public view returns (uint256[] memory, string[] memory, address[] memory, uint256[] memory) {
+    function getUserPosts(address userAddress) public view returns (uint256[] memory, string[] memory, string[] memory, address[] memory, uint256[] memory) {
         uint256 postCount = nextContentId;
         uint256[] memory postIds = new uint256[](postCount);
-        string[] memory contentURIs = new string[](postCount);
+        string[] memory texts = new string[](postCount);
+        string[] memory photoCids = new string[](postCount);
         address[] memory creators = new address[](postCount);
         uint256[] memory timestamps = new uint256[](postCount);
 
@@ -59,7 +62,8 @@ contract Post is ContentBase, ERC721Enumerable {
             Content memory c = getContent(i);
             if (c.creator == userAddress) {
                 postIds[i] = c.id;
-                contentURIs[i] = c.contentURI;
+                texts[i] = c.text;
+                photoCids[i] = c.photoCid;
                 creators[i] = c.creator; 
                 timestamps[i] = c.timestamp;    
                 count++;
@@ -68,11 +72,11 @@ contract Post is ContentBase, ERC721Enumerable {
 
         assembly {
             mstore(postIds, count)
-            mstore(contentURIs, count)
+            mstore(texts, count)
             mstore(timestamps, count)
         }
 
-        return (postIds, contentURIs, creators, timestamps);
+        return (postIds, texts, photoCids, creators, timestamps);
     }
 
     

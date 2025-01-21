@@ -9,7 +9,7 @@ contract UserProfile {
     struct Profile {
         string username;
         string bio;
-        string profilePictureURI;
+        string profilePictureCdi;
     }
 
     mapping(address => Profile) private profiles;
@@ -19,9 +19,9 @@ contract UserProfile {
 
     /*  EVENTS  */
     // creating a new profile
-    event ProfileCreated(address user, string username, string bio, string profilePictureURI);
+    event ProfileCreated(address user, string username, string bio, string profilePictureCdi);
 
-    event ProfileUpdated(address user, string username, string bio, string profilePictureURI);
+    event ProfileUpdated(address user, string username, string bio, string profilePictureCdi);
 
 
     /*  MODIFIERS   */
@@ -66,25 +66,25 @@ contract UserProfile {
         return userAddresses;
     }
 
-    function createNewProfile(string memory username, string memory bio, string memory profilePictureURI
+    function createNewProfile(string memory username, string memory bio, string memory profilePictureCdi
     ) public profileDoesNotExist validProfile(username) returns (bool) {
 
-        profiles[msg.sender] = Profile(username, bio, profilePictureURI);
+        profiles[msg.sender] = Profile(username, bio, profilePictureCdi);
         userAddresses.push(msg.sender);
         usernames[username] = msg.sender;
 
-        emit ProfileCreated(msg.sender, username, bio, profilePictureURI);
+        emit ProfileCreated(msg.sender, username, bio, profilePictureCdi);
         return true;
     }
 
-    function editProfile (string memory username, string memory bio, string memory profilePictureURI
+    function editProfile (string memory username, string memory bio, string memory profilePictureCdi
     ) public validProfile(username) returns (bool) {
 
         usernames[profiles[msg.sender].username] = Constants.NULL_ADDRESS;
-        profiles[msg.sender] = Profile(username, bio, profilePictureURI);
+        profiles[msg.sender] = Profile(username, bio, profilePictureCdi);
         usernames[username] = msg.sender;
 
-        emit ProfileUpdated(msg.sender, username, bio, profilePictureURI);
+        emit ProfileUpdated(msg.sender, username, bio, profilePictureCdi);
         return true;
     }
 

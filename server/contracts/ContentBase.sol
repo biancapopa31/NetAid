@@ -5,7 +5,8 @@ contract ContentBase {
 
     struct Content {
         uint256 id;
-        string contentURI;
+        string text;
+        string photoCid;
         uint256 timestamp;
         address creator;
     }
@@ -13,18 +14,19 @@ contract ContentBase {
     Content[] private  content_list;
     uint256 internal nextContentId = 0;
 
-    modifier notEmptyURI(string memory uri) {
-        require(bytes(uri).length > 0, "Content URI cannot be empty");
+    modifier notEmpty(string memory text, string memory photoCid) {
+        require(bytes(text).length > 0 || bytes(photoCid).length > 0, "Content cannot be empty");
         _;
     }
 
-    function _createContent(string memory contentURI) internal returns (uint256) {
+    function createContent(string memory text, string memory photoCid) internal returns (uint256) {
         uint256 contentId = nextContentId;
         nextContentId++;
 
         content_list.push( Content({
             id: contentId,
-            contentURI: contentURI,
+            text: text,
+            photoCid: photoCid,
             timestamp: block.timestamp,
             creator: msg.sender
         }));
@@ -33,7 +35,7 @@ contract ContentBase {
     }
 
     function getContent(uint256 contentId) public view returns (Content memory) {
-        require(bytes(content_list[contentId].contentURI).length > 0, "Content does not exist");
+        require(bytes(content_list[contentId].text).length > 0, "Content does not exist");
         return content_list[contentId];
     }
 

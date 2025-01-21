@@ -196,7 +196,13 @@
       {
         "indexed": false,
         "internalType": "string",
-        "name": "contentURI",
+        "name": "text",
+        "type": "string"
+      },
+      {
+        "indexed": false,
+        "internalType": "string",
+        "name": "photoCid",
         "type": "string"
       }
     ],
@@ -269,7 +275,12 @@
     "inputs": [
       {
         "internalType": "string",
-        "name": "contentURI",
+        "name": "text",
+        "type": "string"
+      },
+      {
+        "internalType": "string",
+        "name": "photoCid",
         "type": "string"
       }
     ],
@@ -297,7 +308,12 @@
           },
           {
             "internalType": "string",
-            "name": "contentURI",
+            "name": "text",
+            "type": "string"
+          },
+          {
+            "internalType": "string",
+            "name": "photoCid",
             "type": "string"
           },
           {
@@ -385,7 +401,12 @@
           },
           {
             "internalType": "string",
-            "name": "contentURI",
+            "name": "text",
+            "type": "string"
+          },
+          {
+            "internalType": "string",
+            "name": "photoCid",
             "type": "string"
           },
           {
@@ -428,6 +449,11 @@
         "type": "string"
       },
       {
+        "internalType": "string",
+        "name": "",
+        "type": "string"
+      },
+      {
         "internalType": "address",
         "name": "",
         "type": "address"
@@ -455,6 +481,11 @@
         "internalType": "uint256[]",
         "name": "",
         "type": "uint256[]"
+      },
+      {
+        "internalType": "string[]",
+        "name": "",
+        "type": "string[]"
       },
       {
         "internalType": "string[]",

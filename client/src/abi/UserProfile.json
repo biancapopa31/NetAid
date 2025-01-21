@@ -23,7 +23,7 @@
       {
         "indexed": false,
         "internalType": "string",
-        "name": "profilePictureURI",
+        "name": "profilePictureCdi",
         "type": "string"
       }
     ],
@@ -54,7 +54,7 @@
       {
         "indexed": false,
         "internalType": "string",
-        "name": "profilePictureURI",
+        "name": "profilePictureCdi",
         "type": "string"
       }
     ],
@@ -75,7 +75,7 @@
       },
       {
         "internalType": "string",
-        "name": "profilePictureURI",
+        "name": "profilePictureCdi",
         "type": "string"
       }
     ],
@@ -104,7 +104,7 @@
       },
       {
         "internalType": "string",
-        "name": "profilePictureURI",
+        "name": "profilePictureCdi",
         "type": "string"
       }
     ],
@@ -188,7 +188,7 @@
           },
           {
             "internalType": "string",
-            "name": "profilePictureURI",
+            "name": "profilePictureCdi",
             "type": "string"
           }
         ],
