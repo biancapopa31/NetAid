@@ -1,147 +1,203 @@
 import * as Yup from 'yup';
-import {ErrorMessage, Field, Form, Formik} from "formik";
-import {useState} from "react";
+// import {ErrorMessage, Field, Form, Formik} from "formik";
+import React, {useRef, useState} from "react";
 import {pinata} from "../utils/config";
 import {useContracts} from "../contexts/ContractsContext";
 import {useNavigate} from "react-router";
 import {useUserDetails} from "../contexts/UserDetailsContext";
-
-const newAccountSchema = Yup.object().shape({
-    username: Yup.string().required('Username is required'),
-    bio: Yup.string(),
-    profilePicture: Yup.mixed()
-        .nullable()
-        .test('fileType', 'Unsupported file format', (value) => {
-            if (value) {
-                const validTypes = ['image/jpeg', 'image/png', 'image/gif'];
-                return validTypes.includes(value.type);
-            }
-            return true;
-        }),
-});
+import {Card, CardBody, CardHeader, Input, Form, Textarea, Image, Divider} from "@heroui/react";
+import {Button} from "@heroui/button";
+import {FaPlus} from "react-icons/fa";
+import {SignOutButton} from "@clerk/clerk-react";
 
 
 export function NewAccountPage() {
-    const [selectedFile, setSelectedFile] = useState<File | null>(null);
-    const {userProfileContract} = useContracts();
-    const [usernameTaken, setUsernameTaken] = useState(false);
-    const {setUsername, setBio, setAccountInitialized, setProfilePictureCdi, accountInitialized, setProfilePictureUrl, profilePictureCdi} = useUserDetails();
+    const {userProfileContract, signer} = useContracts();
+    const {
+        setUsername,
+        setBio,
+        setAccountInitialized,
+        setProfilePictureCdi,
+        setProfilePictureUrl,
+    } = useUserDetails();
+
+    const [newUsername, setNewUsername] = useState("");
+    const [newBio, setNewBio] = useState("");
+    const [newProfilePicture, setNewProfilePicture] = useState<File | null>(null);
+    const [errors, setErrors] = useState({});
+    const [loading, setLoading] = useState(false);
     const navigate = useNavigate();
+    const fileInputRef = useRef(null);
 
-    // TODO: see why user state doesn't update after creating a new user.
-    const handleSubmit = async (values) =>{
-        setUsernameTaken( await userProfileContract.existsUserByUserId(values.username));
+    const imageSize = 200;
 
-        if(usernameTaken){
+
+    const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+        e.preventDefault();
+
+        setLoading(true);
+        const values = Object.fromEntries(new FormData(e.currentTarget));
+
+        console.log(values.username, typeof(values.username));
+        const taken = await userProfileContract.existsUserByUserId(values.username);
+
+        if (taken) {
+            setLoading(false);
+            setErrors({username:"This username is already taken."});
             return;
         }
 
         //TODO see how can we handle errors from blockchain
-        if(selectedFile){
-            try{
-                const upload = await pinata.upload.file(selectedFile);
+        if (newProfilePicture) {
+            try {
+                const upload = await pinata.upload.file(newProfilePicture);
 
                 const tx = await userProfileContract.createNewProfile(values.username, values.bio, upload.IpfsHash);
                 await tx.wait();
+
                 setProfilePictureCdi(upload.IpfsHash);
 
-                const profilePictureUrl = await pinata.gateways.convert(profilePictureCdi);
+                const profilePictureUrl = await pinata.gateways.convert(upload.IpfsHash);
                 setProfilePictureUrl(profilePictureUrl);
-            }catch(err){
-                console.error("There was an error creating the account",err);
+            } catch (err) {
+                console.error("There was an error creating the account", err);
+                setLoading(false);
                 return;
             }
-        }else {
+        } else {
             try {
-                console.log("sug");
                 const tx = await userProfileContract.createNewProfile(values.username, values.bio, '');
                 await tx.wait();
 
-            }catch(err){
-                console.error("There was an error creating the account",err);
+            } catch (err) {
+                console.error("There was an error creating the account", err);
+                setLoading(false);
                 return;
             }
         }
         console.log(values);
-        setUsername(values.username);
-        setBio(values.bio);
+        setUsername(values.username as string);
+        setBio(values.bio as string);
         setAccountInitialized(true);
         navigate("/home");
 
     }
 
+    const handleClear = () => {
+        setNewProfilePicture(null);
+        setNewUsername("");
+        setNewBio("");
+    }
+
+    const handleIconClick = () => {
+        if (fileInputRef.current) {
+            fileInputRef.current.click(); // Trigger the file input dialog
+        }
+    };
+
     return (
-        <div>
-            <p>New Account</p>
+        <div className={"flex flex-col items-center m-5"}>
+            <Card className={"w-full max-w-[1024px] p-4 pb-0 text-xl"}>
+                <CardHeader className={"justify-center pb-5"}>Create your account</CardHeader>
+                <Divider/>
+                <CardBody>
+                    <Form validationBehavior="native" onSubmit={handleSubmit}
+                          validationErrors={errors}
+                          className={"gap-4"}
+                    >
+                        <div className="flex flex-row gap-2">
+                            <p className={"text-small"}>Account: </p>
+                            <p className="text-small text-default-500"> {signer?.address}</p>
 
-            <Formik
-                initialValues={{
-                    username: '',
-                    bio: '',
-                    profilePicture: null,
-                }}
-                validationSchema={newAccountSchema}
-                onSubmit={handleSubmit}
-            >
-                {({ setFieldValue, isSubmitting }) => (
-                    <Form>
-                        <div>
-                            <label htmlFor="username">Username</label>
-                            <Field
-                                id="username"
-                                name="username"
-                                type="text"
-                                placeholder="Enter your username"
-                            />
-                            <ErrorMessage name="username" component="div" />
-                            {usernameTaken && (<div>Username is already taken!</div>)}
                         </div>
+                        <input
+                            ref={fileInputRef}
+                            id="profilePicture"
+                            name="profilePicture"
+                            type="file"
+                            accept="image/*"
+                            onChange={(event) => {
+                                const file = event.target.files ? event.target.files[0] : null;
+                                setNewProfilePicture(file); // Update local state
+                            }}
+                            className={"hidden"}
+                        />
+                        <>
+                            <label
+                                className={"text-small font-normal pb-0 mb-0"}
+                            >Profile picture</label>
 
-                        <div>
-                            <label htmlFor="bio">Bio</label>
-                            <Field
-                                id="bio"
-                                name="bio"
-                                as="textarea"
-                                placeholder="Tell us about yourself"
-                            />
-                            <ErrorMessage name="bio" component="div" className="error" />
-                        </div>
+                            {newProfilePicture ?
+                                <div className={"flex flex-row justify-center gap-3 items-end"}>
+                                    <Image
+                                        alt="profilePicture"
+                                        height={imageSize}
+                                        radius="sm"
+                                        src={URL.createObjectURL(newProfilePicture)}
+                                        style={{
+                                            aspectRatio: "1/1",
+                                            objectFit: "cover",
+                                        }}
 
-                        <div>
-                            <label htmlFor="profilePicture">Profile Picture</label>
-                            <input
-                                id="profilePicture"
-                                name="profilePicture"
-                                type="file"
-                                accept="image/*"
-                                onChange={(event) => {
-                                    const file = event.target.files ? event.target.files[0] : null;
-                                    setFieldValue('profilePicture', file); // Update Formik state
-                                    setSelectedFile(file); // Update local state
-                                }}
-                            />
-                            {selectedFile && (
-                                <div>
-                                    <p>Selected file: {selectedFile.name}</p>
-                                    <img
-                                        src={URL.createObjectURL(selectedFile)}
-                                        alt="Selected preview"
-                                        style={{ width: '100px', height: '100px' }}
                                     />
+                                    <Button onPress={handleIconClick} color={"primary"}
+                                            variant={"ghost"}>Change</Button>
+                                    <Button onPress={() => {
+                                        setNewProfilePicture(null)
+                                    }} color={"warning"} variant={"ghost"}>Remove</Button>
                                 </div>
-                            )}
-                            <ErrorMessage name="profilePicture" component="div" className="error" />
-                        </div>
+                                :
+                                <div
+                                    onClick={handleIconClick}
+                                    className="rounded-lg bg-default flex justify-center items-center"
+                                    style={{
+                                        height: imageSize,
+                                        width: imageSize,
+                                        backgroundColor: "default"
+                                    }}
+                                >
+                                    <FaPlus className="h-7 w-7" size={20} color={"gray"}/>
+                                </div>
+                            }
+                        </>
 
-                        <div>
-                            <button type="submit" disabled={isSubmitting}>
-                                {isSubmitting ? 'Submitting...' : 'Create Account'}
-                            </button>
+                        <Input
+                            isRequired={true}
+                            label={"Username"}
+                            labelPlacement="outside"
+                            name="username"
+                            placeholder="Enter your username"
+                            value={newUsername}
+                            onValueChange={(value) => {setNewUsername(value.trim())}}
+                        ></Input>
+
+                        <Textarea
+                            label={"Bio"}
+                            labelPlacement="outside"
+                            name="bio"
+                            placeholder="Tell us about yourself"
+                            value={newBio}
+                            onValueChange={(value) => {setNewBio(value.trim())}}
+                        ></Textarea>
+                        <Divider/>
+
+                        <div className={"flex flex-row gap-3"}>
+                            <Button color="primary" type="submit" isLoading={loading}>
+                                Create Account
+                            </Button>
+                            <Button color={"danger"} variant={"ghost"} onPress={handleClear}>
+                                Clear
+                            </Button>
+                            <SignOutButton>
+                                <Button color={"danger"}>
+                                        Discard
+                                </Button>
+                            </SignOutButton>
+
                         </div>
                     </Form>
-                )}
-            </Formik>
+                </CardBody>
+            </Card>
         </div>
     );
 }

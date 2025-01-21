@@ -126,7 +126,7 @@ export const MyProfilePage = () => {
                                 defaultValue={username}
                                 onChange={(e) => {
                                     console.log("Am schimbat valoarea",e.target.value);
-                                    setNewUserName(e.target.value)
+                                    setNewUserName(e.target.value.trim())
                                 }}
                             />
                         ):
@@ -144,7 +144,7 @@ export const MyProfilePage = () => {
                                 className="text-md"
                                 placeholder="bio"
                                 defaultValue={bio}
-                                onChange={(e) => setNewBio(e.target.value)}
+                                onChange={(e) => setNewBio(e.target.value.trim())}
                             >
                             </Input>
                     :

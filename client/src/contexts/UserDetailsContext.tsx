@@ -53,13 +53,6 @@ export const UserDetailsProvider: React.FC<UserDetailsProviderProps> = ({ childr
         }
     }, [userProfileContract, signer, setAccountInitialized]);
 
-    useEffect(() => {
-        console.log(username);
-    }, [username]);
-
-    useEffect(() => {
-        console.log("signer", signer);
-    }, [signer]);
 
     const fetchAndStoreUserDetails = useCallback(async () => {
             const profile = await userProfileContract.getProfile(signer);
