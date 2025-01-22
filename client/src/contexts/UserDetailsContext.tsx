@@ -4,6 +4,9 @@ import {useContracts} from "./ContractsContext";
 import {ethers} from "ethers";
 import {pinata} from "../utils/config";
 import {useLoader} from "./LoaderContext";
+import decodeInterface from "../interfaces/decode-interface";
+import {UserProfile, userProfileKeys} from "../interfaces/UserProfile";
+import {pinataService} from "../utils/pinataService";
 
 interface UserDetails {
     accountInitialized: boolean|null;
@@ -19,7 +22,7 @@ interface UserDetails {
 }
 
 const initialState: UserDetails = {
-    accountInitialized: false,
+    accountInitialized: null,
     setAccountInitialized: () => {},
     username: '',
     setUsername: () => {},
@@ -56,19 +59,20 @@ export const UserDetailsProvider: React.FC<UserDetailsProviderProps> = ({ childr
 
 
     const fetchAndStoreUserDetails = useCallback(async () => {
-            const profile = await userProfileContract.getProfile(signer);
+            const response = await userProfileContract.getProfile(signer);
+            const profile = decodeInterface<UserProfile>(userProfileKeys, response);
 
-            console.log("in fetchAndStore", profile);
-            setUsername(profile[0]);
-            setBio(profile[1]);
-
-            if(profile[2]){
-                setProfilePictureCdi(profile[2]);
+            setUsername(profile.username);
+            setBio(profile.bio);
+            if(profile.profilePictureCid){
+                setProfilePictureCdi(profile.profilePictureCid);
+                const profilePictureUrl = await pinataService.convertCid(profile.profilePictureCid);
+                setProfilePictureUrl(profilePictureUrl);
+            }else {
+                // TODO: remove hardcoding
+                setProfilePictureUrl(process.env.REACT_APP_DEFAULT_PROFILE_PICTURE);
             }
-            // const profilePictureUrl = await pinata.gateways.convert(profilePictureCdi);
-        // TODO: remove hardcoding
-            setProfilePictureUrl("https://gray-ready-gayal-243.mypinata.cloud/ipfs/bafkreielw242z5adle6zcqeml5k3vz3gwgsurvf3w7hnbgvtartlxauezy");
-            console.log("afterSetProfilePicture" );
+
     }, [userProfileContract, signer, setUsername, setBio, setProfilePictureUrl, setProfilePictureCdi]);
 
     useEffect(() => {

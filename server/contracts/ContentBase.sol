@@ -3,7 +3,7 @@ pragma solidity ^0.8.27;
 
 contract ContentBase {
 
-    struct Content {
+     struct Content {
         uint256 id;
         string text;
         string photoCid;
@@ -59,10 +59,10 @@ contract ContentBase {
         return likeCount[contentId];
     }
 
-    function isLikedByUser(uint contentId, address userAddress) internal view returns (bool) {
+    function isLikedByUser(uint contentId, address userAddress) public  view returns (bool) {
         return _isLiker[contentId][userAddress];
     }
-    
+
     function getAllContent() internal view returns (Content[] memory)  {
         return content_list;
     }

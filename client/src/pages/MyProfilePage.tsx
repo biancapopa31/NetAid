@@ -16,6 +16,7 @@ import {useContracts} from "../contexts/ContractsContext";
 import {Button} from "@heroui/button";
 import { FaRegEdit } from "react-icons/fa";
 import {pinata} from "../utils/config";
+import {pinataService} from "../utils/pinataService";
 
 export const MyProfilePage = () => {
     const {username, bio, profilePictureUrl, setBio, setUsername, setProfilePictureCdi, setProfilePictureUrl, profilePictureCdi} = useUserDetails();
@@ -34,27 +35,25 @@ export const MyProfilePage = () => {
 
         console.log(newUserName, username);
         if(newUserName !== username){
-            usernameTaken = await userProfileContract.existsUserByUserId(newUserName);
-            console.log("In if:",usernameTaken);
+            usernameTaken = await userProfileContract.existsUserByUserId(newUserName.trim());
         }
-        console.log("Dupa if:",usernameTaken);
 
         if(!usernameTaken){
             if(newProfilePicture){
-                const upload = await pinata.upload.file(newProfilePicture);
+                const cid = await pinataService.uploadFile(newProfilePicture);
 
-                const tx = await userProfileContract.editProfile(newUserName, newBio, upload.IpfsHash);
+                const tx = await userProfileContract.editProfile(newUserName.trim(), newBio.trim(), cid);
                 await tx.wait();
 
-                setProfilePictureCdi(upload.IpfsHash);
-                const profilePictureUrl = await pinata.gateways.convert(profilePictureCdi);
+                setProfilePictureCdi(cid);
+                const profilePictureUrl = await pinataService.convertCid(profilePictureCdi);
                 setProfilePictureUrl(profilePictureUrl);
             }else{
-                const tx = await userProfileContract.editProfile(newUserName, newBio, '');
+                const tx = await userProfileContract.editProfile(newUserName.trim(), newBio.trim(), '');
                 tx.wait();
             }
-            setUsername(newUserName);
-            setBio(newBio);
+            setUsername(newUserName.trim());
+            setBio(newBio.trim());
         }
         setIsEditing(!isEditing);
     }
@@ -126,7 +125,7 @@ export const MyProfilePage = () => {
                                 defaultValue={username}
                                 onChange={(e) => {
                                     console.log("Am schimbat valoarea",e.target.value);
-                                    setNewUserName(e.target.value.trim())
+                                    setNewUserName(e.target.value)
                                 }}
                             />
                         ):
@@ -144,7 +143,7 @@ export const MyProfilePage = () => {
                                 className="text-md"
                                 placeholder="bio"
                                 defaultValue={bio}
-                                onChange={(e) => setNewBio(e.target.value.trim())}
+                                onChange={(e) => setNewBio(e.target.value)}
                             >
                             </Input>
                     :

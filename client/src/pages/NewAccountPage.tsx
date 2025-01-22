@@ -9,6 +9,7 @@ import {Card, CardBody, CardHeader, Input, Form, Textarea, Image, Divider} from 
 import {Button} from "@heroui/button";
 import {FaPlus} from "react-icons/fa";
 import {SignOutButton} from "@clerk/clerk-react";
+import {pinataService} from "../utils/pinataService";
 
 
 export function NewAccountPage() {
@@ -39,7 +40,7 @@ export function NewAccountPage() {
         const values = Object.fromEntries(new FormData(e.currentTarget));
 
         console.log(values.username, typeof(values.username));
-        const taken = await userProfileContract.existsUserByUserId(values.username);
+        const taken = await userProfileContract.existsUserByUserId(values.username.trim());
 
         if (taken) {
             setLoading(false);
@@ -50,14 +51,14 @@ export function NewAccountPage() {
         //TODO see how can we handle errors from blockchain
         if (newProfilePicture) {
             try {
-                const upload = await pinata.upload.file(newProfilePicture);
+                const cid = await pinataService.uploadFile(newProfilePicture);
 
-                const tx = await userProfileContract.createNewProfile(values.username, values.bio, upload.IpfsHash);
+                const tx = await userProfileContract.createNewProfile(values.username.trim(), values.bio.trim(), cid);
                 await tx.wait();
 
-                setProfilePictureCdi(upload.IpfsHash);
+                setProfilePictureCdi(cid);
 
-                const profilePictureUrl = await pinata.gateways.convert(upload.IpfsHash);
+                const profilePictureUrl = await pinataService.convertCid(cid);
                 setProfilePictureUrl(profilePictureUrl);
             } catch (err) {
                 console.error("There was an error creating the account", err);
@@ -66,7 +67,7 @@ export function NewAccountPage() {
             }
         } else {
             try {
-                const tx = await userProfileContract.createNewProfile(values.username, values.bio, '');
+                const tx = await userProfileContract.createNewProfile(values.username.trim(), values.bio.trim(), '');
                 await tx.wait();
 
             } catch (err) {
@@ -168,7 +169,7 @@ export function NewAccountPage() {
                             name="username"
                             placeholder="Enter your username"
                             value={newUsername}
-                            onValueChange={(value) => {setNewUsername(value.trim())}}
+                            onValueChange={(value) => {setNewUsername(value)}}
                         ></Input>
 
                         <Textarea
@@ -177,7 +178,7 @@ export function NewAccountPage() {
                             name="bio"
                             placeholder="Tell us about yourself"
                             value={newBio}
-                            onValueChange={(value) => {setNewBio(value.trim())}}
+                            onValueChange={(value) => {setNewBio(value)}}
                         ></Textarea>
                         <Divider/>
 

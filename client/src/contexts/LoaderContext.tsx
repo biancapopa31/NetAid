@@ -21,15 +21,14 @@ interface LoaderProviderProps {
 
 export const LoaderPovider: React.FC<LoaderProviderProps> = ({children}) => {
     const [isLoading, setIsLoading] = React.useState(true);
-    const {username, profilePictureUrl} = useUserDetails();
+    const {username, profilePictureUrl, accountInitialized} = useUserDetails();
 
     useEffect(() => {
-        if(username && profilePictureUrl){
+        if((username && profilePictureUrl) || accountInitialized === false){
             setIsLoading(false);
-            console.log("Loading is done!");
-            console.log(profilePictureUrl);
+            console.log("Loading is done!", accountInitialized);
         }
-    }, [username, profilePictureUrl]);
+    }, [username, profilePictureUrl, accountInitialized]);
 
     return (
         <LoaderContext.Provider value={{

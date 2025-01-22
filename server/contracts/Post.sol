@@ -29,54 +29,47 @@ contract Post is ContentBase, ERC721Enumerable {
         return (postId, c.text, c.photoCid, c.creator, c.timestamp);
     }
 
-    function getAllPosts() public view returns ( uint256[] memory, string[] memory, address[] memory, uint256[] memory) {
+    function getAllPosts() public view returns ( Content[] memory) {
 
-        uint256 postCount = nextContentId;
-        uint256[] memory postIds = new uint256[](postCount);
-        string[] memory texts = new string[](postCount);
-        string[] memory photoCids = new string[](postCount);
-        address[] memory creators = new address[](postCount);
-        uint256[] memory timestamps = new uint256[](postCount);
+        // uint256 postCount = nextContentId;
+        // uint256[] memory postIds = new uint256[](postCount);
+        // string[] memory texts = new string[](postCount);
+        // string[] memory photoCids = new string[](postCount);
+        // address[] memory creators = new address[](postCount);
+        // uint256[] memory timestamps = new uint256[](postCount);
 
-        for (uint256 i = 0; i < postCount; i++) {
-            Content memory c = getContent(i);
-            postIds[i] = c.id;
-            texts[i] = c.text;
-            photoCids[i] = c.photoCid;
-            creators[i] = c.creator; 
-            timestamps[i] = c.timestamp;
-        }
-        return (postIds, texts, creators, timestamps);
+        // for (uint256 i = 0; i < postCount; i++) {
+        //     Content memory c = getContent(i);
+        //     postIds[i] = c.id;
+        //     texts[i] = c.text;
+        //     photoCids[i] = c.photoCid;
+        //     creators[i] = c.creator; 
+        //     timestamps[i] = c.timestamp;
+        // }
+        // return (postIds, texts, creators, timestamps);
+
+        return super.getAllContent();
     }
 
-    function getUserPosts(address userAddress) public view returns (uint256[] memory, string[] memory, string[] memory, address[] memory, uint256[] memory) {
+    function getUserPosts(address userAddress) public view returns (Content[] memory) {
         uint256 postCount = nextContentId;
-        uint256[] memory postIds = new uint256[](postCount);
-        string[] memory texts = new string[](postCount);
-        string[] memory photoCids = new string[](postCount);
-        address[] memory creators = new address[](postCount);
-        uint256[] memory timestamps = new uint256[](postCount);
+        Content[] memory allPosts = super.getAllContent();
+        Content[] memory userPosts = new Content[](postCount);
 
         uint256 count = 0;
-        for (uint256 i = 0; i < postCount; i++) {
-            Content memory c = getContent(i);
-            if (c.creator == userAddress) {
-                postIds[i] = c.id;
-                texts[i] = c.text;
-                photoCids[i] = c.photoCid;
-                creators[i] = c.creator; 
-                timestamps[i] = c.timestamp;    
+        for(uint256 i = 0; i < postCount; i++){
+            if (userAddress == allPosts[i].creator) {
+                userPosts[count] = allPosts[i];
                 count++;
             }
         }
 
-        assembly {
-            mstore(postIds, count)
-            mstore(texts, count)
-            mstore(timestamps, count)
+        assembly{
+            mstore(userPosts, count)
         }
 
-        return (postIds, texts, photoCids, creators, timestamps);
+        return userPosts;
+        
     }
 
     

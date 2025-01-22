@@ -6,6 +6,7 @@ import {useUserDetails} from "../contexts/UserDetailsContext";
 import {FaCamera} from "react-icons/fa";
 import {useContracts} from "../contexts/ContractsContext";
 import {pinata} from "../utils/config";
+import {pinataService} from "../utils/pinataService";
 
 
 export const NewPostCard: () => React.JSX.Element = () => {
@@ -31,11 +32,11 @@ export const NewPostCard: () => React.JSX.Element = () => {
         setUploading(true);
         let upload = '';
         if(inputFile){
-             upload = await pinata.upload.file(inputFile);
-             upload = upload.ipfsHash;
+             upload = await pinataService.uploadFile(inputFile);
         }
+        console.log("data for post", postText.trim(), upload);
 
-        const tx = await postsContract.createPost(postText, upload);
+        const tx = await postsContract.createPost(postText.trim(), upload);
         await tx.wait();
         setUploading(false);
         setIsFocused(false);
@@ -73,7 +74,7 @@ export const NewPostCard: () => React.JSX.Element = () => {
                     placeholder="What are you thinking about?"
                     minRows={isFocused ? 3 : 1}
                     value={postText}
-                    onValueChange={(value) => {setPostText(value.trim())}}
+                    onValueChange={(value) => {setPostText(value)}}
                 >
                 </Textarea>
                 {inputFile && isFocused && (
@@ -116,7 +117,7 @@ export const NewPostCard: () => React.JSX.Element = () => {
                             }}
                             className={"hidden"}
                         />
-                        <FaCamera color={"gray"} onClick={handleIconClick} size={19} />
+                        <FaCamera color={"hsl(var(--heroui-primary))"} onClick={handleIconClick} size={19} />
                         <Button color={"primary"} variant={"ghost"} size={'sm'} onPress={handlePost} isLoading={uploading}>
                             Post
                         </Button>

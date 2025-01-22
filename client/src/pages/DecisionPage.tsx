@@ -8,6 +8,7 @@ export const DecisionPage = () => {
     const {accountInitialized, setAccountInitialized, setBio, bio, username, setUsername} = useUserDetails();
 
     useEffect(() => {
+        console.log("In decision page",accountInitialized);
         if(accountInitialized == null)
             return;
         if (accountInitialized){
@@ -16,7 +17,7 @@ export const DecisionPage = () => {
         else{
             navigate('/newAccount');
         }
-    }, [accountInitialized]);
+    }, [accountInitialized, navigate]);
 
     return (
         <Spinner color={"primary"} className={"flex justify-center items-center"}/>
