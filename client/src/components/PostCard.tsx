@@ -10,7 +10,7 @@ import {pinataService} from "../utils/pinataService";
 import {AiFillLike, AiOutlineLike} from "react-icons/ai";
 import {FaGasPump, FaRegCommentAlt} from "react-icons/fa";
 import {ethers, BrowserProvider, Contract} from "ethers";
-import {useEstimatedGas} from "../hooks";
+import {useEstimatedGas, useEstimatedGasConditioned} from "../hooks";
 import {useGasConvertor} from "../hooks/useGasConvertor";
 
 export const PostCard: ({post: Post}) => JSX.Element = ({post}) => {
@@ -22,10 +22,10 @@ export const PostCard: ({post: Post}) => JSX.Element = ({post}) => {
     const [estimateLikeGas, setEstimateLikeGas] = useState<number | null>(null);
     const {provider, userProfileContract, postsContract, signer} = useContracts();
 
-    const likeGas = useEstimatedGas(postsContract.like, post.id);
-    const unlikeGas = useEstimatedGas(postsContract.unlike, post.id, likeCount > 0);
+    const likeGas = useEstimatedGas(postsContract, (c) => c.like, post.id);
+    const unlikeGas = useEstimatedGasConditioned(postsContract, (c) => c.unlike, likeCount > 0, post.id);
     const likeETH = useGasConvertor(provider, likeGas?.gas);
-    const unlikeETH = useGasConvertor(provider, likeGas?.gas);
+    const unlikeETH = useGasConvertor(provider, unlikeGas?.gas);
 
     useEffect(() => {
         userProfileContract.getProfile(post.creator).then((response) => {

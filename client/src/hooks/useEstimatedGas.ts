@@ -1,20 +1,32 @@
-import {BrowserProvider, ethers} from "ethers";
-import {useEffect, useState} from "react";
+import {BrowserProvider, Contract, ethers} from "ethers";
+import {useCallback, useEffect, useMemo, useState} from "react";
 
 type ContractFunction<F extends Function> = F & {
-    estimateGas: (p: Parameters<F>) => Promise<number>;
+    estimateGas: (...p: Parameters<F>[]) => Promise<bigint>;
 }
 
-export function useEstimatedGas<F extends (...args: any[]) => any>(fn: ContractFunction<F>, args: Parameters<F>, condition?: boolean) {
-    const [gas, setGas] = useState<{ gas: number } | undefined>(undefined);
+const hash = (obj) => JSON.stringify(obj, (_, v) => typeof v === 'bigint' ? v.toString() : v)
+
+export function useEstimatedGasConditioned<F extends (...args: any[]) => any>(contract: Contract | null, fn: ContractFunction<F>, condition: boolean, ...args: Parameters<F>[]) {
+    const [gas, setGas] = useState<{ gas: bigint } | undefined>(undefined);
+
+    const contractFunction = useMemo(() => {
+        return fn(contract);
+    }, [contract]);
+
     useEffect(() => {
-        if (condition === false) return;
-        fn.estimateGas(args).then((gas) => {
+        console.log("useEstimatedGasConditioned", condition);
+        if (!condition) return;
+        contractFunction?.estimateGas(...args).then((gas) => {
                 setGas({
                     gas: gas,
                 })
         });
-    }, [fn, args, condition]);
+    }, [contractFunction, hash(args), condition]);
 
     return gas;
+}
+
+export function useEstimatedGas(contract, fn, ...args){
+    return useEstimatedGasConditioned(contract, fn, true, ...args);
 }
