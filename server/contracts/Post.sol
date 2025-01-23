@@ -6,7 +6,7 @@ import "@openzeppelin/contracts/token/ERC721/extensions/ERC721Enumerable.sol";
 import "./UserProfile.sol";
 
 contract Post is ContentBase, ERC721Enumerable {
-    event PostCreated(address indexed creator, uint256 indexed postId, string text, string photoCid);
+    event PostCreated(Content _content);
 
     constructor() ERC721("DecentralizedPost", "DPOST") {}
 
@@ -15,13 +15,13 @@ contract Post is ContentBase, ERC721Enumerable {
     }
 
     function createPost(string memory text, string memory photoCid) public notEmpty(text, photoCid) returns (uint256) {
-        uint256 postId = createContent(text, photoCid);
+        Content memory newPost = createContent(text, photoCid);
 
         // Mint an NFT for the post
-        _mint(msg.sender, postId);
+        _mint(msg.sender, newPost.id);
 
-        emit PostCreated(msg.sender, postId, text, photoCid);
-        return postId;
+        emit PostCreated(newPost);
+        return newPost.id;
     }
 
     function getPost(uint256 postId) public view returns (uint256 , string memory, string memory, address, uint256 ) {

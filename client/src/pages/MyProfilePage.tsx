@@ -21,6 +21,7 @@ import {CiCircleRemove} from "react-icons/ci";
 import {IoIosRemoveCircleOutline} from "react-icons/io";
 import {useGasConvertor} from "../hooks/useGasConvertor";
 import {Bounce, toast, ToastContainer} from "react-toastify";
+import {useEvents} from "../contexts/EventsContext";
 
 export const MyProfilePage = () => {
     const minGasLimit = 21000
@@ -37,6 +38,7 @@ export const MyProfilePage = () => {
         profilePictureCdi
     } = useUserDetails();
     const {signer, userProfileContract, provider} = useContracts();
+    const {profileUpdated$} = useEvents();
 
     const [isEditing, setIsEditing] = useState(false);
     const [newUserName, setNewUserName] = useState(username);
@@ -72,7 +74,6 @@ export const MyProfilePage = () => {
         let usernameTaken = false;
 
         let transactionOptions = {};
-        console.log("approveGasLimit",approveGasLimit);
         if(approveGasLimit){
             transactionOptions = {gasLimit: gasLimit};
         }
@@ -83,7 +84,6 @@ export const MyProfilePage = () => {
         }
 
         if (!usernameTaken) {
-            console.log("transaction options",transactionOptions);
             try {
                 if (newProfilePicture) {
                     const cid = await pinataService.uploadFile(newProfilePicture);

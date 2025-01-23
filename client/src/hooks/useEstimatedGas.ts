@@ -15,7 +15,6 @@ export function useEstimatedGasConditioned<F extends (...args: any[]) => any>(co
     }, [contract]);
 
     useEffect(() => {
-        console.log("useEstimatedGasConditioned", condition);
         if (!condition) return;
         contractFunction?.estimateGas(...args).then((gas) => {
                 setGas({

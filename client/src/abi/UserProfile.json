@@ -3,28 +3,27 @@
     "anonymous": false,
     "inputs": [
       {
+        "components": [
+          {
+            "internalType": "string",
+            "name": "username",
+            "type": "string"
+          },
+          {
+            "internalType": "string",
+            "name": "bio",
+            "type": "string"
+          },
+          {
+            "internalType": "string",
+            "name": "profilePictureCdi",
+            "type": "string"
+          }
+        ],
         "indexed": false,
-        "internalType": "address",
-        "name": "user",
-        "type": "address"
-      },
-      {
-        "indexed": false,
-        "internalType": "string",
-        "name": "username",
-        "type": "string"
-      },
-      {
-        "indexed": false,
-        "internalType": "string",
-        "name": "bio",
-        "type": "string"
-      },
-      {
-        "indexed": false,
-        "internalType": "string",
-        "name": "profilePictureCdi",
-        "type": "string"
+        "internalType": "struct UserProfile.Profile",
+        "name": "_profile",
+        "type": "tuple"
       }
     ],
     "name": "ProfileCreated",
@@ -34,28 +33,27 @@
     "anonymous": false,
     "inputs": [
       {
+        "components": [
+          {
+            "internalType": "string",
+            "name": "username",
+            "type": "string"
+          },
+          {
+            "internalType": "string",
+            "name": "bio",
+            "type": "string"
+          },
+          {
+            "internalType": "string",
+            "name": "profilePictureCdi",
+            "type": "string"
+          }
+        ],
         "indexed": false,
-        "internalType": "address",
-        "name": "user",
-        "type": "address"
-      },
-      {
-        "indexed": false,
-        "internalType": "string",
-        "name": "username",
-        "type": "string"
-      },
-      {
-        "indexed": false,
-        "internalType": "string",
-        "name": "bio",
-        "type": "string"
-      },
-      {
-        "indexed": false,
-        "internalType": "string",
-        "name": "profilePictureCdi",
-        "type": "string"
+        "internalType": "struct UserProfile.Profile",
+        "name": "_profile",
+        "type": "tuple"
       }
     ],
     "name": "ProfileUpdated",

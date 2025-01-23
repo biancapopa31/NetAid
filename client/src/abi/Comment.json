@@ -3,22 +3,32 @@
     "anonymous": false,
     "inputs": [
       {
-        "indexed": true,
-        "internalType": "address",
-        "name": "creator",
-        "type": "address"
-      },
-      {
-        "indexed": true,
-        "internalType": "uint256",
-        "name": "commentId",
-        "type": "uint256"
-      },
-      {
+        "components": [
+          {
+            "internalType": "uint256",
+            "name": "id",
+            "type": "uint256"
+          },
+          {
+            "internalType": "string",
+            "name": "text",
+            "type": "string"
+          },
+          {
+            "internalType": "uint256",
+            "name": "timestamp",
+            "type": "uint256"
+          },
+          {
+            "internalType": "address",
+            "name": "creator",
+            "type": "address"
+          }
+        ],
         "indexed": false,
-        "internalType": "string",
-        "name": "text",
-        "type": "string"
+        "internalType": "struct Comment.CommentType",
+        "name": "_comment",
+        "type": "tuple"
       }
     ],
     "name": "CommentCreated",

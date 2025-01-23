@@ -22,19 +22,21 @@ contract ContentBase {
         _;
     }
 
-    function createContent(string memory text, string memory photoCid) internal returns (uint256) {
+    function createContent(string memory text, string memory photoCid) internal returns (Content memory) {
         uint256 contentId = nextContentId;
         nextContentId++;
 
-        content_list.push( Content(
+        Content memory newContent = Content(
             uint256(contentId), 
             text=text, 
             photoCid, 
             block.timestamp, 
             msg.sender
-        ));
+        );
 
-        return contentId;
+        content_list.push(newContent);
+
+        return newContent;
     }
 
     function getContent(uint256 contentId) internal view returns (Content memory) {

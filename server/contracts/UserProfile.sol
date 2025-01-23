@@ -19,9 +19,9 @@ contract UserProfile {
 
     /*  EVENTS  */
     // creating a new profile
-    event ProfileCreated(address user, string username, string bio, string profilePictureCdi);
+    event ProfileCreated(Profile _profile);
 
-    event ProfileUpdated(address user, string username, string bio, string profilePictureCdi);
+    event ProfileUpdated(Profile _profile);
 
 
     /*  MODIFIERS   */
@@ -73,7 +73,7 @@ contract UserProfile {
         userAddresses.push(msg.sender);
         usernames[username] = msg.sender;
 
-        emit ProfileCreated(msg.sender, username, bio, profilePictureCdi);
+        emit ProfileCreated(profiles[msg.sender]);
         return true;
     }
 
@@ -84,7 +84,7 @@ contract UserProfile {
         profiles[msg.sender] = Profile(username, bio, profilePictureCdi);
         usernames[username] = msg.sender;
 
-        emit ProfileUpdated(msg.sender, username, bio, profilePictureCdi);
+        emit ProfileUpdated(profiles[msg.sender]);
         return true;
     }
 

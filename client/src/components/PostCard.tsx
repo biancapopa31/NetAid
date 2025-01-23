@@ -12,6 +12,7 @@ import {FaGasPump, FaRegCommentAlt} from "react-icons/fa";
 import {ethers, BrowserProvider, Contract} from "ethers";
 import {useEstimatedGas, useEstimatedGasConditioned} from "../hooks";
 import {useGasConvertor} from "../hooks/useGasConvertor";
+import {Bounce, toast, ToastContainer} from "react-toastify";
 
 export const PostCard: ({post: Post}) => JSX.Element = ({post}) => {
 
@@ -19,7 +20,7 @@ export const PostCard: ({post: Post}) => JSX.Element = ({post}) => {
     const [profilePictureUrl, setProfilePictureUrl] = useState("");
     const [liked, setLiked] = useState(false);
     const [likeCount, setLikeCount] = useState(0);
-    const [estimateLikeGas, setEstimateLikeGas] = useState<number | null>(null);
+    const [postPhotoUrl, setpostPhotoUrl] = useState("");
     const {provider, userProfileContract, postsContract, signer} = useContracts();
 
     const likeGas = useEstimatedGas(postsContract, (c) => c.like, post.id);
@@ -57,15 +58,54 @@ export const PostCard: ({post: Post}) => JSX.Element = ({post}) => {
     //         });
     // }, [userProfile]);
 
+    // useEffect(() => {
+    //     if(!post.photoCid)
+    //         return;
+    //     pinataService.convertCid(post.photoCid).then((url) => {
+    //         setpostPhotoUrl(url)
+    //     })
+    // }, [post.photoCid]);
+
     const handleLike = async () => {
         if (liked) {
-            const tx = await postsContract.unlike(post.id);
-            await tx.wait();
-            setLikeCount(likeCount - 1);
+            try {
+                const tx = await postsContract.unlike(post.id);
+                await tx.wait();
+                setLikeCount(likeCount - 1);
+            }catch (err){
+                console.error("There was an error trying to unlike post:", err);
+                toast.error('There was an error trying to unlike post!', {
+                    position: "top-center",
+                    autoClose: 5000,
+                    hideProgressBar: false,
+                    closeOnClick: false,
+                    pauseOnHover: true,
+                    draggable: true,
+                    progress: undefined,
+                    theme: "light",
+                    transition: Bounce,
+                });
+            }
         } else {
-            const tx = await postsContract.like(post.id);
-            await tx.wait();
-            setLikeCount(likeCount + 1);
+            try {
+                const tx = await postsContract.like(post.id);
+                await tx.wait();
+                setLikeCount(likeCount + 1);
+            }catch (err){
+                console.error("There was an error trying to like post:", err);
+                toast.error('There was an error trying to like post!', {
+                    position: "top-center",
+                    autoClose: 5000,
+                    hideProgressBar: false,
+                    closeOnClick: false,
+                    pauseOnHover: true,
+                    draggable: true,
+                    progress: undefined,
+                    theme: "light",
+                    transition: Bounce,
+                });
+            }
+
         }
         setLiked(!liked);
     }
@@ -75,6 +115,7 @@ export const PostCard: ({post: Post}) => JSX.Element = ({post}) => {
 
     return (
         <Card className="w-full max-w-[1024px] pb-0">
+            <ToastContainer></ToastContainer>
             <CardHeader className="justify-between px-7 pt-7">
                 <div className="flex gap-5">
                     <Avatar
@@ -91,23 +132,18 @@ export const PostCard: ({post: Post}) => JSX.Element = ({post}) => {
                 <p className={"text-small text-default-400"}> {new Date(Number(post.timestamp)).toLocaleDateString('en-En')} </p>
             </CardHeader>
             <Divider/>
-            <CardBody className="px-7 text-small text-default-700 min-h-10 gap-3 py-3">
-                <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Morbi id libero a risus sollicitudin
-                    sodales. Nam eu ante aliquet, posuere felis aliquam, fringilla felis. Quisque eu sagittis dolor.
-                    Maecenas sagittis elementum cursus. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Etiam
-                    vulputate magna et malesuada eleifend. Donec dolor diam, tincidunt sit amet felis a, malesuada
-                    sagittis elit. Fusce gravida tincidunt elementum. Aliquam maximus interdum odio a porta. Phasellus
-                    lobortis vulputate enim id venenatis. Integer enim ante, sollicitudin eget ligula eu, euismod
-                    dapibus odio. Cras gravida felis massa, in iaculis lectus molestie a. In hac habitasse platea
-                    dictumst.
+            <CardBody className="px-7 text-small text-default-700 min-h-1 gap-3 py-3">
+                <p>{post.text}
                 </p>
                 <div className="flex justify-center w-full">
+                    {postPhotoUrl &&
                     <Image
                         alt={"Post Image"}
                         className={"max-h-[20rem]"}
                         radius={"sm"}
-                        src={process.env.REACT_APP_DEFAULT_PROFILE_PICTURE}
-                    ></Image>
+                        // src={process.env.REACT_APP_DEFAULT_PROFILE_PICTURE}
+                        src={postPhotoUrl}
+                    ></Image>}
                 </div>
 
             </CardBody>

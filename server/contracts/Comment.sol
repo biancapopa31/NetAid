@@ -6,12 +6,20 @@ import "./Post.sol";
 
 /*E facut cu gettere*/
 
+
 contract Comment is ContentBase {
+
+    struct CommentType{
+        uint256 id;
+        string text;
+        uint256 timestamp;
+        address creator;
+    }
 
     // Mapping to link comments to posts
     mapping(uint256 => uint256[]) private postComments;
 
-    event CommentCreated(address indexed creator, uint256 indexed commentId, string text);
+    event CommentCreated(CommentType _comment);
 
     /* FUNCTIONS */
 
@@ -19,13 +27,26 @@ contract Comment is ContentBase {
         return "This is a test from Comment contract";
     }
 
+    function transformContentInComment(Content memory content) internal pure virtual returns (CommentType memory comment) {
+        return CommentType({
+            id: content.id, 
+            text: content.text,
+            timestamp : content.timestamp,
+            creator: content.creator
+            });
+    
+    }
+
     // Create a new comment for a specific post
     function createComment(string memory text, uint256 postId) public notEmpty(text, '') returns (uint256) {
-        uint256 commentId = createContent(text, '');
-        postComments[postId].push(commentId);
+        Content memory newContent = createContent(text, '');
 
-        emit CommentCreated(msg.sender, commentId, text);
-        return commentId;
+        CommentType memory newComment = transformContentInComment(newContent);
+
+        postComments[postId].push(newComment.id);
+
+        emit CommentCreated(newComment);
+        return newComment.id;
     }
 
     // Get all comments for a specific post

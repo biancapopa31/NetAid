@@ -1,5 +1,4 @@
-import React, {useEffect} from 'react';
-import ethers from 'ethers';
+import React from 'react';
 import './App.css';
 import {
     ClerkProvider,
@@ -7,12 +6,12 @@ import {
     SignedOut,
 } from "@clerk/clerk-react";
 import {useNavigate} from "react-router";
-import {SignInPage} from "./pages/SignInPage";
+import {SignInPage} from "./pages";
 import {AppRoutes} from "./routes/AppRoutes";
 import {UserDetailsProvider} from "./contexts/UserDetailsContext";
 import {ContractsProvider} from "./contexts/ContractsContext";
-import {LoaderPovider, useLoader} from "./contexts/LoaderContext";
-import {Spinner} from "@heroui/react";
+import {LoaderPovider} from "./contexts/LoaderContext";
+import {EventProvider} from "./contexts/EventsContext";
 
 function App() {
 
@@ -27,7 +26,9 @@ function App() {
                 <ContractsProvider>
                     <UserDetailsProvider>
                         <LoaderPovider>
-                            <AppRoutes/>
+                            <EventProvider>
+                                <AppRoutes/>
+                            </EventProvider>
                         </LoaderPovider>
                     </UserDetailsProvider>
                 </ContractsProvider>
