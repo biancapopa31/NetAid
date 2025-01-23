@@ -1,6 +1,6 @@
 import * as Yup from 'yup';
 // import {ErrorMessage, Field, Form, Formik} from "formik";
-import React, {useRef, useState} from "react";
+import React, {useEffect, useRef, useState} from "react";
 import {pinata} from "../utils/config";
 import {useContracts} from "../contexts/ContractsContext";
 import {useNavigate} from "react-router";
@@ -10,6 +10,8 @@ import {Button} from "@heroui/button";
 import {FaPlus} from "react-icons/fa";
 import {SignOutButton} from "@clerk/clerk-react";
 import {pinataService} from "../utils/pinataService";
+import {useEvents} from "../contexts/EventsContext";
+import {Bounce, toast} from "react-toastify";
 
 
 export function NewAccountPage() {
@@ -22,6 +24,8 @@ export function NewAccountPage() {
         setProfilePictureUrl,
     } = useUserDetails();
 
+    const {profileCreated$} = useEvents();
+
     const [newUsername, setNewUsername] = useState("");
     const [newBio, setNewBio] = useState("");
     const [newProfilePicture, setNewProfilePicture] = useState<File | null>(null);
@@ -31,6 +35,8 @@ export function NewAccountPage() {
     const fileInputRef = useRef(null);
 
     const imageSize = 200;
+
+
 
 
     const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
