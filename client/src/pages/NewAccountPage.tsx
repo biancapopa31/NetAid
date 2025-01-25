@@ -1,7 +1,4 @@
-import * as Yup from 'yup';
-// import {ErrorMessage, Field, Form, Formik} from "formik";
-import React, {useEffect, useRef, useState} from "react";
-import {pinata} from "../utils/config";
+import React, {useRef, useState} from "react";
 import {useContracts} from "../contexts/ContractsContext";
 import {useNavigate} from "react-router";
 import {useUserDetails} from "../contexts/UserDetailsContext";
@@ -11,7 +8,6 @@ import {FaPlus} from "react-icons/fa";
 import {SignOutButton} from "@clerk/clerk-react";
 import {pinataService} from "../utils/pinataService";
 import {useEvents} from "../contexts/EventsContext";
-import {Bounce, toast} from "react-toastify";
 
 
 export function NewAccountPage() {
@@ -35,9 +31,6 @@ export function NewAccountPage() {
     const fileInputRef = useRef(null);
 
     const imageSize = 200;
-
-
-
 
     const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
@@ -131,7 +124,7 @@ export function NewAccountPage() {
                         />
                         <>
                             <label
-                                className={"text-small font-normal pb-0 mb-0"}
+                                className={"text-small font-normal pb-0 mb-0 "}
                             >Profile picture</label>
 
                             {newProfilePicture ?
@@ -192,7 +185,7 @@ export function NewAccountPage() {
                             <Button color="primary" type="submit" isLoading={loading}>
                                 Create Account
                             </Button>
-                            <Button color={"danger"} variant={"ghost"} onPress={handleClear}>
+                            <Button color={"primary"} variant={"ghost"} onPress={handleClear}>
                                 Clear
                             </Button>
                             <SignOutButton>

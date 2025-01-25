@@ -50,32 +50,33 @@ contract Comment is ContentBase {
     }
 
     // Get all comments for a specific post
-    function getCommentsForPost(uint256 postId) public view returns (uint256[] memory, string[] memory, address[] memory, uint256[] memory) 
+    function getCommentsForPost(uint256 postId) public view returns (CommentType[] memory) 
     {
         uint256 commentCount = postComments[postId].length;
         require( commentCount> 0, "No comments for this post");
 
-        uint256[] memory commentIds = new uint256[](commentCount);
-        string[] memory texts = new string[](commentCount);
-        address[] memory creators = new address[](commentCount);
-        uint256[] memory timestamps = new uint256[](commentCount);
+        uint256 count = 0;
+        CommentType [] memory comments = new CommentType [](commentCount);
 
         for (uint256 i = 0; i < commentCount; i++) {
             Content memory c = getContent(postComments[postId][i]);
-            commentIds[i] = c.id;
-            texts[i] = c.text;
-            creators[i] = c.creator; 
-            timestamps[i] = c.timestamp;
+            comments[i] = transformContentInComment(c);
         }
-        return (commentIds, texts, creators, timestamps);
+
+        assembly{
+            mstore(comments, count)
+        }
+
+        return  comments;
     }
     
     // Retrieve comment details
     function getComment(uint256 commentId) public view 
-        returns (uint256, string memory, address, uint256) 
+        returns (CommentType memory) 
     {
         Content memory c = getContent(commentId);
-        return (commentId, c.text, c.creator, c.timestamp);
+
+        return transformContentInComment(c);
     }
 
     function getNextContentId() public view returns (uint256) {

@@ -9,11 +9,15 @@ Lupta sabii laser
 Tot respectul
 
 - [x] Librarie pentru constante si functii pure / generice (Ex Get current date) - astea o sa fie pure internal
-- [ ] Librarie pentru affordability (To ask)  
-- [ ] Contract parinte pentru postare si comentariu    
+- [x] Contract parinte pentru postare si comentariu    
+- [ ] Librarie pentru affordability (To ask)
 - [ ] Contract postare si comentariu efectiv  (post: functie external pentru verificare repostable)  
 - [ ] Contract de Repost (comunicare intre 2 contracte)  (mereu eth se trimite la poster)  
-- [ ] Trimitere de ETH  
+- [ ] Trimitere de ETH 
+- [ ] Frontend pentru comentarii
+- [ ] Frontedn pentru trimire de ETH
+- [ ] Implemetare de teste automate pentru contracte
+- [ ] Tratare de erori
 
 Final: 
 INVATAT REACT  
