@@ -9,30 +9,32 @@ import {Bounce, toast, ToastContainer} from "react-toastify";
 export function FeedPage() {
     const {postsContract} = useContracts();
     const [posts, setPosts] = useState<Post[]>([]);
-
     const {newPostAdded$, profileCreated$} = useEvents();
 
-
     useEffect(() => {
-        console.log(newPostAdded$);
         if (!newPostAdded$) return;
-        const subs = newPostAdded$.subscribe((value) =>{
-            toast.success('New post!')
+        const subs = newPostAdded$.subscribe((value) => {
+            toast.success('New post!');
             const post = decodeInterface<Post>(postKeys, value);
-            console.log(post);
-            setPosts((prevPosts) => [post, ...prevPosts]);
-        })
+            setPosts((prevPosts) => {
+                // Check if the post already exists to avoid duplicates
+                if (prevPosts.some(p => p.id === post.id)) {
+                    return prevPosts;
+                }
+                return [post, ...prevPosts];
+            });
+        });
         return () => subs?.unsubscribe();
     }, [newPostAdded$]);
 
     useEffect(() => {
         const getAllPosts = async () => {
             const data = await postsContract.getAllPosts();
-            const posts = data.map((elm) => decodeInterface<Post>(postKeys, elm))
+            const posts = data.map((elm) => decodeInterface<Post>(postKeys, elm));
             setPosts(posts.reverse());
-        }
+        };
         getAllPosts();
-    }, [postsContract])
+    }, [postsContract]);
 
     useEffect(() => {
         if(!profileCreated$)
@@ -49,11 +51,9 @@ export function FeedPage() {
                 theme: "light",
                 transition: Bounce,
             });
-            console.log("cont creat");
         });
-
         return () => sub.unsubscribe();
-    }, [profileCreated$])
+    }, [profileCreated$]);
 
     return (
         <div className={"flex flex-col items-center m-2 gap-5"}>
@@ -77,5 +77,5 @@ export function FeedPage() {
                 ))
             }
         </div>
-    )
+    );
 }
