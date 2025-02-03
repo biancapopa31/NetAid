@@ -1,15 +1,15 @@
-import {NewPostCard, PostCard} from "../components";
-import {useContracts} from "../contexts/ContractsContext";
-import {useEffect, useState} from "react";
+import { NewPostCard, PostCard } from "../components";
+import { useContracts } from "../contexts/ContractsContext";
+import { useEffect, useState } from "react";
 import decodeInterface from "../interfaces/decode-interface";
-import {Post, postKeys} from "../interfaces/Post";
-import {useEvents} from "../contexts/EventsContext";
-import {Bounce, toast, ToastContainer} from "react-toastify";
+import { Post, postKeys } from "../interfaces/Post";
+import { useEvents } from "../contexts/EventsContext";
+import { Bounce, toast, ToastContainer } from "react-toastify";
 
 export function FeedPage() {
-    const {postsContract} = useContracts();
+    const { postsContract } = useContracts();
     const [posts, setPosts] = useState<Post[]>([]);
-    const {newPostAdded$, profileCreated$} = useEvents();
+    const { newPostAdded$, profileCreated$ } = useEvents();
 
     useEffect(() => {
         if (!newPostAdded$) return;
@@ -37,9 +37,8 @@ export function FeedPage() {
     }, [postsContract]);
 
     useEffect(() => {
-        if(!profileCreated$)
-            return;
-        const sub = profileCreated$.subscribe((value) =>{
+        if (!profileCreated$) return;
+        const sub = profileCreated$.subscribe((value) => {
             toast.success('Profile created successfully!', {
                 position: "top-center",
                 autoClose: 5000,
@@ -54,6 +53,16 @@ export function FeedPage() {
         });
         return () => sub.unsubscribe();
     }, [profileCreated$]);
+
+    const handleNewPost = (post) => {
+        setPosts((prevPosts) => {
+            // Check if the post already exists to avoid duplicates
+            if (prevPosts.some(p => p.id === post.id)) {
+                return prevPosts;
+            }
+            return [post, ...prevPosts];
+        });
+    };
 
     return (
         <div className={"flex flex-col items-center m-2 gap-5"}>
@@ -70,7 +79,7 @@ export function FeedPage() {
                 theme="light"
                 transition={Bounce}
             />
-            <NewPostCard/>
+            <NewPostCard onNewPost={handleNewPost} />
             {
                 posts.map(post => (
                     <PostCard post={post} key={post.id} />
