@@ -5,22 +5,30 @@ import { Card, CardBody, CardFooter, CardHeader, Divider, Textarea } from "@hero
 import { Button } from "@heroui/button";
 import { toast, Bounce } from "react-toastify";
 import { Comment, commentKeys } from "../interfaces/Comment";
+import commentAbi from "../abi/Comment.json";
+import { ethers } from "ethers";
 
 const CommentBox = ({ postId }: { postId: string }): React.JSX.Element => {
-    const [comments, setComments] = useState<{ [key: string]: Comment[] }>({});
+    const [comments, setComments] = useState<Comment[]>([]);
     const [newComment, setNewComment] = useState<string>('');
     const { username } = useUserDetails();
-    const { commentsContract } = useContracts();
+    const { signer } = useContracts();
+    const [commentsContract, setCommentsContract] = useState<ethers.Contract | null>(null);
+
+    useEffect(() => {
+        if (signer) {
+            const contractAddress = "0x5FC8d32690cc91D4c39d9d3abcBD16989F875707"; // Replace with your contract address
+            const contract = new ethers.Contract(contractAddress, commentAbi, signer);
+            setCommentsContract(contract);
+        }
+    }, [signer]);
 
     useEffect(() => {
         const fetchComments = async () => {
             if (commentsContract) {
                 try {
                     const fetchedComments = await commentsContract.getCommentsForPost(parseInt(postId));
-                    setComments(prevComments => ({
-                        ...prevComments,
-                        [postId]: fetchedComments.sort((a, b) => b.timestamp - a.timestamp)
-                    }));
+                    setComments(fetchedComments.sort((a, b) => b.timestamp - a.timestamp));
                 } catch (err) {
                     console.error("There was an error fetching comments:", err);
                 }
@@ -59,20 +67,23 @@ const CommentBox = ({ postId }: { postId: string }): React.JSX.Element => {
                 
                 const newCommentEvent = events.find(event => event.event === 'CommentCreated');
                 if (newCommentEvent) {
-                    const decodedEvent = commentsContract.interface.decodeEventLog('CommentCreated', newCommentEvent.data, newCommentEvent.topics);
+                    const decodedEvent = commentsContract.interface.decodeEventLog(
+                        'CommentCreated',
+                        newCommentEvent.data,
+                        newCommentEvent.topics
+                    );
+                    console.log("Decoded event:", decodedEvent); // Log decoded event for debugging
                     const newCommentObj: Comment = {
-                        id: decodedEvent.id,
-                        postId: decodedEvent.postId,
+                        id: decodedEvent.id.toNumber(),
                         text: decodedEvent.text,
-                        timestamp: decodedEvent.timestamp,
+                        timestamp: decodedEvent.timestamp.toNumber(),
                         creator: decodedEvent.creator
                     };
-                    setComments(prevComments => ({
-                        ...prevComments,
-                        [postId]: [newCommentObj, ...(prevComments[postId] || [])].sort((a, b) => b.timestamp - a.timestamp)
-                    }));
+                    setComments(prevComments => [newCommentObj, ...prevComments].sort((a, b) => b.timestamp - a.timestamp));
                     setNewComment('');
                 } else {
+                    console.error("CommentCreated event not found in transaction receipt:", receipt);
+                    console.log("Receipt logs:", receipt.logs); // Additional logging for debugging
                     toast.error('Comment creation failed. Please try again!', {
                         position: "top-center",
                         autoClose: 5000,
@@ -126,7 +137,7 @@ const CommentBox = ({ postId }: { postId: string }): React.JSX.Element => {
             <Divider />
             <CardFooter className="gap-3 px-7 w-full">
                 <div className="comments-list w-full">
-                    {(comments[postId] || []).map((comment, index) => (
+                    {comments.map((comment, index) => (
                         <div key={index} className="comment w-full">
                             {commentKeys.map(key => (
                                 <div key={key}>

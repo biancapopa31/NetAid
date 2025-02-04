@@ -183,19 +183,16 @@ export const PostCard: ({post: Post}) => JSX.Element = ({post}) => {
             </CardHeader>
             <Divider/>
             <CardBody className="px-7 text-small text-default-700 min-h-1 gap-3 py-3">
-                <p>{post.text}
-                </p>
+                <p>{post.text}</p>
                 <div className="flex justify-center w-full">
                     {postPhotoUrl &&
                     <Image
                         alt={"Post Image"}
                         className={"max-h-[20rem]"}
                         radius={"sm"}
-                        // src={process.env.REACT_APP_DEFAULT_PROFILE_PICTURE}
                         src={postPhotoUrl}
                     ></Image>}
                 </div>
-
             </CardBody>
             <Divider></Divider>
             <CardFooter className="gap-3 px-7">
@@ -204,13 +201,8 @@ export const PostCard: ({post: Post}) => JSX.Element = ({post}) => {
                         <div className={"flex flex-col items-center"}>
                             <Button variant={"light"} onPress={handleLike} color={"primary"}>
                                 {likeCount}
-                                {liked ?
-                                    <AiFillLike size={20} color={'hsl(var(--heroui-primary))'}
-                                                style={{color: "primary"}}/>
-                                    : <>
-                                        <AiOutlineLike size={20}/>
-                                    </>
-                                }Like
+                                {liked ? <AiFillLike size={20} color={'hsl(var(--heroui-primary))'} style={{color: "primary"}}/> : <AiOutlineLike size={20}/>}
+                                Like
                             </Button>
                             <p className={"flex flex-row text-default-400 text-small gap-1 items-center"}>
                                 <FaGasPump />
@@ -225,15 +217,6 @@ export const PostCard: ({post: Post}) => JSX.Element = ({post}) => {
                 </div>
                 {showComments && (
                     <div className="w-full mt-4">
-                        <Textarea
-                            placeholder="Add a comment..."
-                            minRows={1}
-                            value={commentText}
-                            onValueChange={(value) => { setCommentText(value) }}
-                        />
-                        <Button color={"primary"} variant={"ghost"} size={'sm'} onPress={handleAddComment}>
-                            Add Comment
-                        </Button>
                         <CommentBox postId={post.id} />
                     </div>
                 )}

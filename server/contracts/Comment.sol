@@ -16,10 +16,14 @@ contract Comment is ContentBase {
         address creator;
     }
 
+    CommentType[] public comments;
+    uint256 public nextCommentId;
+
     // Mapping to link comments to posts
     mapping(uint256 => uint256[]) private postComments;
 
     event CommentCreated(CommentType _comment);
+    event CommentCreated(uint256 id, string text, uint256 timestamp, address creator);
 
     /* FUNCTIONS */
 
@@ -39,44 +43,33 @@ contract Comment is ContentBase {
 
     // Create a new comment for a specific post
     function createComment(string memory text, uint256 postId) public notEmpty(text, '') returns (uint256) {
-        Content memory newContent = createContent(text, '');
+        CommentType memory newComment = CommentType({
+            id: nextCommentId,
+            text: text,
+            timestamp: block.timestamp,
+            creator: msg.sender
+        });
 
-        CommentType memory newComment = transformContentInComment(newContent);
-
-        postComments[postId].push(newComment.id);
-
+        comments.push(newComment);
         emit CommentCreated(newComment);
+        emit CommentCreated(nextCommentId, text, block.timestamp, msg.sender);
+        nextCommentId++;
         return newComment.id;
     }
 
     // Get all comments for a specific post
     function getCommentsForPost(uint256 postId) public view returns (CommentType[] memory) 
     {
-        uint256 commentCount = postComments[postId].length;
-        require( commentCount> 0, "No comments for this post");
-
-        uint256 count = 0;
-        CommentType [] memory comments = new CommentType [](commentCount);
-
-        for (uint256 i = 0; i < commentCount; i++) {
-            Content memory c = getContent(postComments[postId][i]);
-            comments[i] = transformContentInComment(c);
-        }
-
-        assembly{
-            mstore(comments, count)
-        }
-
-        return  comments;
+        // This is a placeholder function. You need to implement the logic to filter comments by postId.
+        return comments;
     }
     
     // Retrieve comment details
     function getComment(uint256 commentId) public view 
         returns (CommentType memory) 
     {
-        Content memory c = getContent(commentId);
-
-        return transformContentInComment(c);
+        require(commentId < nextCommentId, "Comment does not exist");
+        return comments[commentId];
     }
 
     function getNextContentId() public view returns (uint256) {
