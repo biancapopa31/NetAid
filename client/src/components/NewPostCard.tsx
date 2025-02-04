@@ -8,6 +8,7 @@ import { useContracts } from "../contexts/ContractsContext";
 import { pinataService } from "../utils/pinataService";
 import decodeInterface from "../interfaces/decode-interface";
 import { Post, postKeys } from "../interfaces/Post";
+import {toast} from "react-toastify";
 
 export const NewPostCard: ({ onNewPost }) => React.JSX.Element = ({ onNewPost }) => {
     const [isFocused, setIsFocused] = useState(false);
@@ -33,15 +34,17 @@ export const NewPostCard: ({ onNewPost }) => React.JSX.Element = ({ onNewPost })
         if (inputFile) {
             upload = await pinataService.uploadFile(inputFile);
         }
-        const tx = await postsContract.createPost(postText.trim(), upload);
-        const receipt = await tx.wait();
-        const newPostEvent = receipt.events.find(event => event.event === 'PostCreated');
-        const newPost = decodeInterface<Post>(postKeys, newPostEvent.args[0]);
-        onNewPost(newPost);
-        setUploading(false);
-        setIsFocused(false);
-        setPostText('');
-        setInputFile(null);
+        try{
+            const tx = await toast.promise(postsContract.createPost(postText.trim(), upload), {pending: "Uploading new post...", error: "There was an error uploading the post!"});
+            await tx.wait();
+        }catch (err){
+            console.log("There was an error uploading the post", err);
+        }finally {
+            setUploading(false);
+            setIsFocused(false);
+            setPostText('');
+            setInputFile(null);
+        }
     };
 
     useEffect(() => {

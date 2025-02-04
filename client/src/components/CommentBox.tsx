@@ -127,7 +127,6 @@ const CommentBox = ({ postId }: { postId: string }): React.JSX.Element => {
 
     return (
         <Card className="w-full max-w-[1024px] pb-0">
-            <ToastContainer />
             <CardHeader className="justify-between px-7 pt-7">
                 <div className="flex gap-5 w-full">
                     <div className="flex flex-col gap-1 items-start justify-center w-full">

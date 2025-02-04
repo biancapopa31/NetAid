@@ -1,40 +1,34 @@
 import { NewPostCard, PostCard } from "../components";
 import { useContracts } from "../contexts/ContractsContext";
-import { useEffect, useState } from "react";
+import React, {useEffect, useMemo, useState} from "react";
 import decodeInterface from "../interfaces/decode-interface";
 import { Post, postKeys } from "../interfaces/Post";
 import { useEvents } from "../contexts/EventsContext";
 import { Bounce, toast, ToastContainer } from "react-toastify";
+import {usePosts} from "../contexts";
+import {Spinner} from "@heroui/react";
+import {useGenerateFullPost, useMapPost} from "../hooks/useGenerateFullPost";
+import {PostWithCreator} from "../interfaces/PostWithCreator";
 
 export function FeedPage() {
-    const { postsContract } = useContracts();
-    const [posts, setPosts] = useState<Post[]>([]);
+    const {posts, isLoading, setPosts} = usePosts();
     const { newPostAdded$, profileCreated$ } = useEvents();
+    const mapPost = useMapPost();
 
     useEffect(() => {
         if (!newPostAdded$) return;
         const subs = newPostAdded$.subscribe((value) => {
+            console.log("succes!");
             toast.success('New post!');
+            // console.log(value)
             const post = decodeInterface<Post>(postKeys, value);
-            setPosts((prevPosts) => {
-                // Check if the post already exists to avoid duplicates
-                if (prevPosts.some(p => p.id === post.id)) {
-                    return prevPosts;
-                }
-                return [post, ...prevPosts];
-            });
+            mapPost(post).then((post) =>
+            setPosts([post, ...posts as PostWithCreator[]])
+            );
+
         });
         return () => subs?.unsubscribe();
     }, [newPostAdded$]);
-
-    useEffect(() => {
-        const getAllPosts = async () => {
-            const data = await postsContract.getAllPosts();
-            const posts = data.map((elm) => decodeInterface<Post>(postKeys, elm));
-            setPosts(posts.reverse());
-        };
-        getAllPosts();
-    }, [postsContract]);
 
     useEffect(() => {
         if (!profileCreated$) return;
@@ -55,36 +49,29 @@ export function FeedPage() {
     }, [profileCreated$]);
 
     const handleNewPost = (post) => {
-        setPosts((prevPosts) => {
-            // Check if the post already exists to avoid duplicates
-            if (prevPosts.some(p => p.id === post.id)) {
-                return prevPosts;
-            }
-            return [post, ...prevPosts];
-        });
+    //     setPosts((prevPosts) => {
+    //         // Check if the post already exists to avoid duplicates
+    //         if (prevPosts.some(p => p.id === post.id)) {
+    //             return prevPosts;
+    //         }
+    //         return [post, ...prevPosts];
+    //     });
     };
+
+    if(isLoading) {
+        return (
+            <Spinner color={"primary"} className={"flex justify-center items-center"}/>
+        );
+    }
 
     return (
         <div className={"flex flex-col items-center m-2 gap-5"}>
-            <ToastContainer
-                position="top-center"
-                autoClose={5000}
-                hideProgressBar={true}
-                newestOnTop={false}
-                closeOnClick={false}
-                rtl={false}
-                pauseOnFocusLoss
-                draggable
-                pauseOnHover
-                theme="light"
-                transition={Bounce}
-            />
             <NewPostCard onNewPost={handleNewPost} />
-            {
-                posts.map(post => (
-                    <PostCard post={post} key={post.id} />
-                ))
-            }
+                {
+                    posts?.map(post => (
+                        <PostCard post={post} key={post.id} />
+                    ))
+                }
         </div>
     );
 }

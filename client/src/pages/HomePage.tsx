@@ -1,17 +1,13 @@
 import {SignOutButton, UserButton, useUser} from "@clerk/clerk-react";
 import React, {useEffect} from "react";
-import {NavLink, Outlet} from "react-router-dom";
-import {useContracts} from "../contexts/ContractsContext";
-import {useUserDetails} from "../contexts/UserDetailsContext";
+import {Outlet} from "react-router-dom";
 import {Header} from "../components/Header";
 import {useLoader} from "../contexts/LoaderContext";
 import {Spinner} from "@heroui/react";
+import {Bounce, ToastContainer} from "react-toastify";
 
 export function HomePage() {
     const { user } = useUser();
-    const primaryWeb3Wallet = user?.primaryWeb3Wallet;
-    const {userProfileContract, postsContract} = useContracts();
-    const {username, bio, profilePictureCdi, accountInitialized, profilePictureUrl} = useUserDetails();
 
     const {isLoading} = useLoader();
 
@@ -23,6 +19,19 @@ export function HomePage() {
 
     return (
         <>
+            <ToastContainer
+                position="top-center"
+                autoClose={5000}
+                hideProgressBar
+                newestOnTop
+                closeOnClick={false}
+                rtl={false}
+                pauseOnFocusLoss
+                draggable
+                pauseOnHover
+                theme="light"
+                transition={Bounce}
+            />
             <Header/>
             <main style={{padding: '1rem'}}>
                 <Outlet/>

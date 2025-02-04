@@ -7,7 +7,7 @@ export const AppRoutes = () => {
         <Routes>
             <Route index path={'/'} element={<DecisionPage/>}></Route>
             <Route path={'/home'} element={<HomePage/>} >
-                <Route index path={''} element={<FeedPage/>}></Route>
+                    <Route index path={''} element={<FeedPage/>}></Route>
                 <Route path={'myProfile'} element={<MyProfilePage/>}></Route>
             </Route>
             <Route path="/newAccount" element={<NewAccountPage/>}/>

@@ -8,36 +8,29 @@ import decodeInterface from "../interfaces/decode-interface";
 import {pinata} from "../utils/config";
 import {pinataService} from "../utils/pinataService";
 import {AiFillLike, AiOutlineLike} from "react-icons/ai";
-import {FaGasPump, FaRegCommentAlt, FaDonate} from "react-icons/fa"; // Add this import
+import {FaGasPump, FaRegCommentAlt, FaDonate} from "react-icons/fa";
 import {ethers, BrowserProvider, Contract} from "ethers";
 import {useEstimatedGas, useEstimatedGasConditioned} from "../hooks";
 import {useGasConvertor} from "../hooks/useGasConvertor";
 import {Bounce, toast, ToastContainer} from "react-toastify";
-import CommentBox from './CommentBox'; // Add this import
+import CommentBox from './CommentBox';
+import {PostWithCreator} from "../interfaces/PostWithCreator";
 
-export const PostCard: ({post: Post}) => JSX.Element = ({post}) => {
+export const PostCard = ({ post }: { post: PostWithCreator }): JSX.Element => {
 
-    const [userProfile, setUserProfile] = useState<UserProfile>();
-    const [profilePictureUrl, setProfilePictureUrl] = useState("");
     const [liked, setLiked] = useState(false);
     const [likeCount, setLikeCount] = useState(0);
-    const [postPhotoUrl, setpostPhotoUrl] = useState("");
-    const {provider, userProfileContract, postsContract, signer} = useContracts();
+    const {provider, postsContract, signer} = useContracts();
     const [showComments, setShowComments] = useState(false);
     const [commentText, setCommentText] = useState("");
 
     const likeGas = useEstimatedGas(postsContract, (c) => c.like, post.id);
-    const unlikeGas = useEstimatedGasConditioned(postsContract, (c) => c.unlike, likeCount > 0, post.id);
+    const unlikeGas = useEstimatedGasConditioned(postsContract, (c) => c.unlike, likeCount > 0, post.id as any);
     const likeETH = useGasConvertor(provider, likeGas?.gas);
     const unlikeETH = useGasConvertor(provider, unlikeGas?.gas);
 
     useEffect(() => {
-        userProfileContract.getProfile(post.creator).then((response) => {
-            setUserProfile(decodeInterface<UserProfile>(userProfileKeys, response));
-        }).catch((err) => {
-            console.error("There was an error getting creator data for post: ", post.id, err);
-        });
-
+        // TODO add this to postInterface and context
         postsContract.getLikeCount(post.id).then((response) => {
             setLikeCount(Number(response));
         }).catch((err) => {
@@ -51,23 +44,7 @@ export const PostCard: ({post: Post}) => JSX.Element = ({post}) => {
 
         })
 
-    }, [post.creator, post.id, postsContract, signer, userProfileContract]);
-
-    // TODO: uncomment this
-    // useEffect(() => {
-    //     if(userProfile)
-    //         pinataService.convertCid(userProfile.profilePictureCid).then((url) => {
-    //             setProfilePictureUrl(url);
-    //         });
-    // }, [userProfile]);
-
-    // useEffect(() => {
-    //     if(!post.photoCid)
-    //         return;
-    //     pinataService.convertCid(post.photoCid).then((url) => {
-    //         setpostPhotoUrl(url)
-    //     })
-    // }, [post.photoCid]);
+    }, [post.id, postsContract, signer]);
 
     const handleLike = async () => {
         if (liked) {
@@ -196,7 +173,6 @@ export const PostCard: ({post: Post}) => JSX.Element = ({post}) => {
 
     return (
         <Card className="w-full max-w-[1024px] pb-0">
-            <ToastContainer></ToastContainer>
             <CardHeader className="justify-between px-7 pt-7">
                 <div className="flex gap-5">
                     <Avatar
@@ -204,10 +180,11 @@ export const PostCard: ({post: Post}) => JSX.Element = ({post}) => {
                         radius={"full"}
                         size="md"
                         color="primary"
-                        src={process.env.REACT_APP_DEFAULT_PROFILE_PICTURE}
+                        src = {post.profilePictureUrl}
+                        // src={process.env.REACT_APP_DEFAULT_PROFILE_PICTURE}
                     />
                     <div className="flex flex-col gap-1 items-start justify-center">
-                        <h4 className="text-small font-semibold leading-none text-default-600">@{userProfile?.username}</h4>
+                        <h4 className="text-small font-semibold leading-none text-default-600">@{post?.username}</h4>
                     </div>
                 </div>
                 <p className={"text-small text-default-400"}> {new Date(Number(post.timestamp)).toLocaleDateString('en-En')} </p>
@@ -216,12 +193,12 @@ export const PostCard: ({post: Post}) => JSX.Element = ({post}) => {
             <CardBody className="px-7 text-small text-default-700 min-h-1 gap-3 py-3">
                 <p>{post.text}</p>
                 <div className="flex justify-center w-full">
-                    {postPhotoUrl &&
+                    {post.photoUrl &&
                     <Image
                         alt={"Post Image"}
                         className={"max-h-[20rem]"}
                         radius={"sm"}
-                        src={postPhotoUrl}
+                        src={post.photoUrl}
                     ></Image>}
                 </div>
             </CardBody>
@@ -252,7 +229,8 @@ export const PostCard: ({post: Post}) => JSX.Element = ({post}) => {
                 </div>
                 {showComments && (
                     <div className="w-full mt-4">
-                        <CommentBox postId={post.id} />
+                        <CommentBox postId={String(post.id)} />
+                        {/*TODO: change type of postId to number in commentBox*/}
                     </div>
                 )}
             </CardFooter>

@@ -8,10 +8,9 @@ import {
 import {useNavigate} from "react-router";
 import {SignInPage} from "./pages";
 import {AppRoutes} from "./routes/AppRoutes";
-import {UserDetailsProvider} from "./contexts/UserDetailsContext";
-import {ContractsProvider} from "./contexts/ContractsContext";
-import {LoaderPovider} from "./contexts/LoaderContext";
-import {EventProvider} from "./contexts/EventsContext";
+import {
+    UserDetailsProvider, PostsProvider, EventProvider, ContractsProvider, LoaderPovider
+} from "./contexts";
 
 function App() {
 
@@ -27,7 +26,9 @@ function App() {
                     <UserDetailsProvider>
                         <LoaderPovider>
                             <EventProvider>
-                                <AppRoutes/>
+                                <PostsProvider>
+                                    <AppRoutes/>
+                                </PostsProvider>
                             </EventProvider>
                         </LoaderPovider>
                     </UserDetailsProvider>

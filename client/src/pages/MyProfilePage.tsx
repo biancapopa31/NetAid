@@ -143,7 +143,6 @@ export const MyProfilePage = () => {
 
     return (
         <div className="flex flex-col items-center min-h-screen">
-            <ToastContainer></ToastContainer>
             <Card className="w-full max-w-[1024px] p-4 pb-0">
                 <CardHeader className="flex gap-3">
                     <div className="relative">

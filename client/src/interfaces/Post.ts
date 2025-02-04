@@ -5,11 +5,12 @@
 // address creator;
 
 export interface Post {
-    id: bigint;
+    id: number;
     text: string;
     photoCid: string;
-    timestamp: bigint;
+    timestamp: number;
     creator: string;
+    photoUrl: string;
 }
 
 export const postKeys: (keyof Post)[] = ["id", "text", "photoCid", "timestamp", "creator"];
