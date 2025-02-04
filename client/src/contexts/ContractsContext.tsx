@@ -1,51 +1,18 @@
-import React, {Provider, ReactNode, useContext, useEffect, useState} from "react";
-import {ethers, BrowserProvider, Network, Contract, Eip1193Provider, Signer, JsonRpcSigner} from "ethers";
-import deployment from '../utils/deployment.json'
-import UserProfile from "../abi/UserProfile.json";
-import Post from "../abi/Post.json";
-import Comment from "../abi/Comment.json";
+import React, { createContext, useContext, useEffect, useState } from 'react';
+import { ethers } from 'ethers';
+import deployment from '../utils/deployment.json';
+import userProfileAbi from '../abi/UserProfile.json';
+import postAbi from '../abi/Post.json';
+import commentAbi from '../abi/Comment.json';
 
-interface ContractsProps {
-    provider: BrowserProvider | null;
-    setProvider:React.Dispatch<React.SetStateAction<BrowserProvider>>;
-    signer: JsonRpcSigner | null;
-    setSigner:React.Dispatch<React.SetStateAction<JsonRpcSigner>>;
-    userProfileContract: Contract | null;
-    setUserProfileContract:React.Dispatch<React.SetStateAction<Contract>>;
-    postsContract: Contract | null;
-    setPostsContract: React.Dispatch<React.SetStateAction<Contract>>;
-    commentsContract: Contract | null;
-    setCommentsContract: React.Dispatch<React.SetStateAction<Contract>>;
+const ContractsContext = createContext(null);
 
-}
-
-const initialState: ContractsProps = {
-    provider: null,
-    setProvider: () => {},
-    signer: null,
-    setSigner: () => {},
-    userProfileContract: null,
-    setUserProfileContract: () => {},
-    postsContract: null,
-    setPostsContract: () => {},
-    commentsContract: null,
-    setCommentsContract: () => {},
-
-}
-
-const ContractsContext = React.createContext<ContractsProps>(initialState);
-
-interface ContractsProviderProps {
-    children: ReactNode,
-}
-
-export const ContractsProvider: React.FC<ContractsProviderProps> = ({ children }) => {
-    const [provider, setProvider] = useState<BrowserProvider>();
-    const [signer, setSigner] = useState<JsonRpcSigner>();
-    const [userProfileContract, setUserProfileContract] = useState<Contract>();
-    const [postsContract, setPostsContract] = useState<Contract>();
-    const [commentsContract, setCommentsContract] = useState<Contract>();
-
+export const ContractsProvider = ({ children }: { children: React.ReactNode }) => {
+    const [provider, setProvider] = useState<ethers.providers.Web3Provider | null>(null);
+    const [signer, setSigner] = useState<ethers.Signer | null>(null);
+    const [userProfileContract, setUserProfileContract] = useState<ethers.Contract | null>(null);
+    const [postsContract, setPostsContract] = useState<ethers.Contract | null>(null);
+    const [commentsContract, setCommentsContract] = useState<ethers.Contract | null>(null);
 
     useEffect(() => {
         console.log("in Contracts context");
@@ -60,15 +27,15 @@ export const ContractsProvider: React.FC<ContractsProviderProps> = ({ children }
     useEffect(() => {
         if(signer){
             const userProfileAddress = deployment.UserProfile;
-            const userProfileContract = new ethers.Contract(userProfileAddress, UserProfile, signer);
+            const userProfileContract = new ethers.Contract(userProfileAddress, userProfileAbi, signer);
             setUserProfileContract(userProfileContract);
 
             const postAddress = deployment.Post;
-            const postsContract = new ethers.Contract(postAddress, Post, signer);
+            const postsContract = new ethers.Contract(postAddress, postAbi, signer);
             setPostsContract(postsContract);
 
             const commentAddress = deployment.Comment;
-            const commentsContract = new ethers.Contract(commentAddress, Comment, signer);
+            const commentsContract = new ethers.Contract(commentAddress, commentAbi, signer);
             setCommentsContract(commentsContract);
         }
     }, [signer]);
@@ -82,7 +49,6 @@ export const ContractsProvider: React.FC<ContractsProviderProps> = ({ children }
         setSigner(signer);
     };
 
-
     return (
         <ContractsContext.Provider value={{
             provider, setProvider,
@@ -90,7 +56,7 @@ export const ContractsProvider: React.FC<ContractsProviderProps> = ({ children }
             userProfileContract,
             postsContract,
             commentsContract,
-        } as ContractsProps}>
+        }}>
             {children}
         </ContractsContext.Provider>
     );

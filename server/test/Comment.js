@@ -1,5 +1,6 @@
 const { expect } = require("chai");
 const { ethers } = require("hardhat");
+const { formatBytes32String, parseBytes32String } = ethers.utils;
 
 describe("Comment Contract", function () {
   let contentBase, postContract, commentContract;
@@ -23,17 +24,27 @@ describe("Comment Contract", function () {
 
   it("Should add a comment to a post", async () => {
     await postContract.connect(user1).createPost("Post URI");
-    await commentContract.connect(user2).addComment(0, "Comment Content");
+    const encodedComment = formatBytes32String("Comment Content");
+    await commentContract.connect(user2).createComment(encodedComment, 0);
 
-    const comments = await commentContract.getCommentsByPost(0);
-    expect(comments.length).to.equal(1);
-    expect(comments[0].contentURI).to.equal("Comment Content");
+    const comments = await commentContract.getCommentsForPost(0);
+    const decodedComments = comments.map(comment => ({
+      id: comment.id.toNumber(),
+      text: parseBytes32String(comment.text),
+      timestamp: comment.timestamp.toNumber(),
+      creator: comment.creator,
+      postId: comment.postId.toNumber()
+    }));
+    expect(decodedComments.length).to.equal(1);
+    expect(decodedComments[0].text).to.equal("Comment Content");
+    expect(decodedComments[0].postId).to.equal(0);
   });
 
   it("Should emit an event when a comment is added", async () => {
     await postContract.connect(user1).createPost("Post URI");
-    await expect(commentContract.connect(user2).addComment(0, "Comment Content"))
-      .to.emit(commentContract, "CommentAdded")
-      .withArgs(0, "Comment Content", user2.address);
+    const encodedComment = formatBytes32String("Comment Content");
+    await expect(commentContract.connect(user2).createComment(encodedComment, 0))
+      .to.emit(commentContract, "CommentCreated")
+      .withArgs(0, "Comment Content", user2.address, 0);
   });
 });

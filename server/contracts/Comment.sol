@@ -22,7 +22,6 @@ contract Comment is ContentBase {
     // Mapping to link comments to posts
     mapping(uint256 => uint256[]) private postComments;
 
-    event CommentCreated(CommentType _comment);
     event CommentCreated(uint256 id, string text, uint256 timestamp, address creator);
 
     /* FUNCTIONS */
@@ -51,17 +50,34 @@ contract Comment is ContentBase {
         });
 
         comments.push(newComment);
-        emit CommentCreated(newComment);
+        postComments[postId].push(nextCommentId); // Link comment to post
         emit CommentCreated(nextCommentId, text, block.timestamp, msg.sender);
         nextCommentId++;
         return newComment.id;
     }
 
     // Get all comments for a specific post
-    function getCommentsForPost(uint256 postId) public view returns (CommentType[] memory) 
-    {
-        // This is a placeholder function. You need to implement the logic to filter comments by postId.
-        return comments;
+    function getCommentsForPost(uint256 postId) public view returns (CommentType[] memory) {
+        uint256[] memory commentIds = postComments[postId];
+        uint256 validCommentsCount = 0;
+
+        for (uint256 i = 0; i < commentIds.length; i++) {
+            if (commentIds[i] < nextCommentId) {
+                validCommentsCount++;
+            }
+        }
+
+        CommentType[] memory postCommentsArray = new CommentType[](validCommentsCount);
+        uint256 index = 0;
+
+        for (uint256 i = 0; i < commentIds.length; i++) {
+            if (commentIds[i] < nextCommentId) {
+                postCommentsArray[index] = comments[commentIds[i]];
+                index++;
+            }
+        }
+
+        return postCommentsArray;
     }
     
     // Retrieve comment details

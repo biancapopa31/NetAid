@@ -5,4 +5,4 @@ export interface Comment {
     creator: string;
 }
 
-export const commentKeys: (keyof Comment)[] = ['id', 'text', 'timestamp', 'creator'];
+export const commentKeys: (keyof Comment)[] = ["id", "text", "timestamp", "creator"];

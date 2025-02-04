@@ -3,16 +3,17 @@ import { useUserDetails } from "../contexts/UserDetailsContext";
 import { useContracts } from "../contexts/ContractsContext";
 import { Card, CardBody, CardFooter, CardHeader, Divider, Textarea } from "@heroui/react";
 import { Button } from "@heroui/button";
-import { toast, Bounce } from "react-toastify";
+import { toast, Bounce, ToastContainer } from "react-toastify";
 import { Comment, commentKeys } from "../interfaces/Comment";
 import commentAbi from "../abi/Comment.json";
 import { ethers } from "ethers";
+import decodeInterface from "../interfaces/decode-interface";
 
 const CommentBox = ({ postId }: { postId: string }): React.JSX.Element => {
     const [comments, setComments] = useState<Comment[]>([]);
     const [newComment, setNewComment] = useState<string>('');
     const { username } = useUserDetails();
-    const { signer } = useContracts();
+    const { signer } = useContracts(); // Use signer instead of provider
     const [commentsContract, setCommentsContract] = useState<ethers.Contract | null>(null);
 
     useEffect(() => {
@@ -23,20 +24,7 @@ const CommentBox = ({ postId }: { postId: string }): React.JSX.Element => {
         }
     }, [signer]);
 
-    useEffect(() => {
-        const fetchComments = async () => {
-            if (commentsContract) {
-                try {
-                    const fetchedComments = await commentsContract.getCommentsForPost(parseInt(postId));
-                    setComments(fetchedComments.sort((a, b) => b.timestamp - a.timestamp));
-                } catch (err) {
-                    console.error("There was an error fetching comments:", err);
-                }
-            }
-        };
-
-        fetchComments();
-    }, [commentsContract, postId]);
+    // Removed fetchComments function and its related usage
 
     const handleCommentChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
         setNewComment(e.target.value);
@@ -72,7 +60,6 @@ const CommentBox = ({ postId }: { postId: string }): React.JSX.Element => {
                         newCommentEvent.data,
                         newCommentEvent.topics
                     );
-                    console.log("Decoded event:", decodedEvent); // Log decoded event for debugging
                     const newCommentObj: Comment = {
                         id: decodedEvent.id.toNumber(),
                         text: decodedEvent.text,
@@ -82,8 +69,6 @@ const CommentBox = ({ postId }: { postId: string }): React.JSX.Element => {
                     setComments(prevComments => [newCommentObj, ...prevComments].sort((a, b) => b.timestamp - a.timestamp));
                     setNewComment('');
                 } else {
-                    console.error("CommentCreated event not found in transaction receipt:", receipt);
-                    console.log("Receipt logs:", receipt.logs); // Additional logging for debugging
                     toast.error('Comment creation failed. Please try again!', {
                         position: "top-center",
                         autoClose: 5000,
@@ -115,6 +100,7 @@ const CommentBox = ({ postId }: { postId: string }): React.JSX.Element => {
 
     return (
         <Card className="w-full max-w-[1024px] pb-0">
+            <ToastContainer />
             <CardHeader className="justify-between px-7 pt-7">
                 <div className="flex gap-5 w-full">
                     <div className="flex flex-col gap-1 items-start justify-center w-full">
@@ -141,7 +127,7 @@ const CommentBox = ({ postId }: { postId: string }): React.JSX.Element => {
                         <div key={index} className="comment w-full">
                             {commentKeys.map(key => (
                                 <div key={key}>
-                                    <strong>{key}:</strong> {comment[key]}
+                                    <strong>{key}:</strong> {comment[key as keyof Comment]}
                                 </div>
                             ))}
                         </div>

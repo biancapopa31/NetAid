@@ -50,7 +50,7 @@ export const UserDetailsProvider: React.FC<UserDetailsProviderProps> = ({ childr
 
     const checkUser = useCallback(async () => {
         try {
-            const exists = await userProfileContract.existsUser();
+            const exists = await userProfileContract.existsUser(signer.getAddress());
             setAccountInitialized(exists);
         }catch (err){
             console.error("Can't verify user", err);

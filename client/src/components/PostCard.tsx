@@ -8,7 +8,7 @@ import decodeInterface from "../interfaces/decode-interface";
 import {pinata} from "../utils/config";
 import {pinataService} from "../utils/pinataService";
 import {AiFillLike, AiOutlineLike} from "react-icons/ai";
-import {FaGasPump, FaRegCommentAlt} from "react-icons/fa";
+import {FaGasPump, FaRegCommentAlt, FaDonate} from "react-icons/fa"; // Add this import
 import {ethers, BrowserProvider, Contract} from "ethers";
 import {useEstimatedGas, useEstimatedGasConditioned} from "../hooks";
 import {useGasConvertor} from "../hooks/useGasConvertor";
@@ -163,6 +163,37 @@ export const PostCard: ({post: Post}) => JSX.Element = ({post}) => {
         }
     };
 
+    const handleDonate = async () => {
+        try {
+            const tx = await postsContract.donate(post.id, { value: ethers.parseEther("0.01") }); // Example donation amount
+            await tx.wait();
+            toast.success('Donation successful!', {
+                position: "top-center",
+                autoClose: 5000,
+                hideProgressBar: false,
+                closeOnClick: false,
+                pauseOnHover: true,
+                draggable: true,
+                progress: undefined,
+                theme: "light",
+                transition: Bounce,
+            });
+        } catch (err) {
+            console.error("There was an error trying to donate:", err);
+            toast.error('There was an error trying to donate!', {
+                position: "top-center",
+                autoClose: 5000,
+                hideProgressBar: false,
+                closeOnClick: false,
+                pauseOnHover: true,
+                draggable: true,
+                progress: undefined,
+                theme: "light",
+                transition: Bounce,
+            });
+        }
+    };
+
     return (
         <Card className="w-full max-w-[1024px] pb-0">
             <ToastContainer></ToastContainer>
@@ -214,6 +245,10 @@ export const PostCard: ({post: Post}) => JSX.Element = ({post}) => {
                             Comment
                         </Button>
                     </div>
+                    <Button variant={"light"} color={"danger"} className="text-white" onPress={handleDonate}>
+                        <FaDonate />
+                        Make Donation
+                    </Button>
                 </div>
                 {showComments && (
                     <div className="w-full mt-4">
