@@ -24,7 +24,34 @@ const CommentBox = ({ postId }: { postId: string }): React.JSX.Element => {
         }
     }, [signer]);
 
-    // Removed fetchComments function and its related usage
+    useEffect(() => {
+        fetchComments();
+    }, [commentsContract, postId]);
+
+    const fetchComments = async () => {
+        if (commentsContract) {
+            try {
+                const data = await commentsContract.getCommentsForPost(parseInt(postId));
+                const decodedComments = data.map((commentData: any) =>
+                    decodeInterface<Comment>(commentKeys, commentData)
+                );
+                setComments(decodedComments);
+            } catch (err) {
+                console.error("There was an error fetching comments:", err);
+                toast.error('There was an error fetching comments!', {
+                    position: "top-center",
+                    autoClose: 5000,
+                    hideProgressBar: false,
+                    closeOnClick: false,
+                    pauseOnHover: true,
+                    draggable: true,
+                    progress: undefined,
+                    theme: "light",
+                    transition: Bounce,
+                });
+            }
+        }
+    };
 
     const handleCommentChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
         setNewComment(e.target.value);
