@@ -1,4 +1,4 @@
-import {Avatar, Card, CardBody, CardFooter, CardHeader, Divider, Image} from "@heroui/react";
+import {Avatar, Card, CardBody, CardFooter, CardHeader, Divider, Image, Textarea} from "@heroui/react";
 import React, {JSX, useEffect, useState} from "react";
 import {Button} from "@heroui/button";
 import {Post} from "../interfaces/Post";
@@ -13,6 +13,7 @@ import {ethers, BrowserProvider, Contract} from "ethers";
 import {useEstimatedGas, useEstimatedGasConditioned} from "../hooks";
 import {useGasConvertor} from "../hooks/useGasConvertor";
 import {Bounce, toast, ToastContainer} from "react-toastify";
+import CommentBox from './CommentBox'; // Add this import
 
 export const PostCard: ({post: Post}) => JSX.Element = ({post}) => {
 
@@ -22,6 +23,8 @@ export const PostCard: ({post: Post}) => JSX.Element = ({post}) => {
     const [likeCount, setLikeCount] = useState(0);
     const [postPhotoUrl, setpostPhotoUrl] = useState("");
     const {provider, userProfileContract, postsContract, signer} = useContracts();
+    const [showComments, setShowComments] = useState(false);
+    const [commentText, setCommentText] = useState("");
 
     const likeGas = useEstimatedGas(postsContract, (c) => c.like, post.id);
     const unlikeGas = useEstimatedGasConditioned(postsContract, (c) => c.unlike, likeCount > 0, post.id);
@@ -110,8 +113,55 @@ export const PostCard: ({post: Post}) => JSX.Element = ({post}) => {
         setLiked(!liked);
     }
     const handleComment = () => {
+        setShowComments(!showComments);
+    };
 
-    }
+    const handleAddComment = async () => {
+        if (!commentText.trim()) {
+            toast.error('Please enter a comment', {
+                position: "top-center",
+                autoClose: 5000,
+                hideProgressBar: false,
+                closeOnClick: false,
+                pauseOnHover: true,
+                draggable: true,
+                progress: undefined,
+                theme: "light",
+                transition: Bounce,
+            });
+            return;
+        }
+
+        try {
+            const tx = await postsContract.addComment(post.id, commentText.trim());
+            await tx.wait();
+            toast.success('Comment added successfully!', {
+                position: "top-center",
+                autoClose: 5000,
+                hideProgressBar: false,
+                closeOnClick: false,
+                pauseOnHover: true,
+                draggable: true,
+                progress: undefined,
+                theme: "light",
+                transition: Bounce,
+            });
+            setCommentText("");
+        } catch (err) {
+            console.error("There was an error trying to add comment:", err);
+            toast.error('There was an error trying to add comment!', {
+                position: "top-center",
+                autoClose: 5000,
+                hideProgressBar: false,
+                closeOnClick: false,
+                pauseOnHover: true,
+                draggable: true,
+                progress: undefined,
+                theme: "light",
+                transition: Bounce,
+            });
+        }
+    };
 
     return (
         <Card className="w-full max-w-[1024px] pb-0">
@@ -172,10 +222,21 @@ export const PostCard: ({post: Post}) => JSX.Element = ({post}) => {
                             Comment
                         </Button>
                     </div>
-                    <Button color={"primary"} variant={"ghost"}>
-                        Make a donation
-                    </Button>
                 </div>
+                {showComments && (
+                    <div className="w-full mt-4">
+                        <Textarea
+                            placeholder="Add a comment..."
+                            minRows={1}
+                            value={commentText}
+                            onValueChange={(value) => { setCommentText(value) }}
+                        />
+                        <Button color={"primary"} variant={"ghost"} size={'sm'} onPress={handleAddComment}>
+                            Add Comment
+                        </Button>
+                        <CommentBox postId={post.id} />
+                    </div>
+                )}
             </CardFooter>
         </Card>
     );

@@ -9,7 +9,7 @@ import { pinataService } from "../utils/pinataService";
 import decodeInterface from "../interfaces/decode-interface";
 import { Post, postKeys } from "../interfaces/Post";
 
-const NewPostCard = ({ onNewPost }) => {
+export const NewPostCard: ({ onNewPost }) => React.JSX.Element = ({ onNewPost }) => {
     const [isFocused, setIsFocused] = useState(false);
     const cardRef = useRef(null);
     const fileInputRef = useRef(null);
@@ -28,7 +28,6 @@ const NewPostCard = ({ onNewPost }) => {
     };
 
     const handlePost = async (e) => {
-        e.preventDefault();
         setUploading(true);
         let upload = '';
         if (inputFile) {
@@ -111,5 +110,3 @@ const NewPostCard = ({ onNewPost }) => {
         </Card>
     );
 };
-
-export default NewPostCard;

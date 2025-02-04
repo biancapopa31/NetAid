@@ -48,7 +48,7 @@ export function Header() {
                         <DropdownItem key="profile" >
                             <NavLink to={'/home/myProfile'}>My Profile</NavLink>
                             </DropdownItem>
-                        <DropdownItem key="logout" color="danger">
+                        <DropdownItem key="logout" color="pnger">
                             <SignOutButton>
                                 Log Out
                             </SignOutButton>
