@@ -10,7 +10,7 @@ import decodeInterface from "../interfaces/decode-interface";
 import { Post, postKeys } from "../interfaces/Post";
 import {toast} from "react-toastify";
 
-export const NewPostCard: ({ onNewPost }) => React.JSX.Element = ({ onNewPost }) => {
+export const NewPostCard: () => React.JSX.Element = () => {
     const [isFocused, setIsFocused] = useState(false);
     const cardRef = useRef(null);
     const fileInputRef = useRef(null);

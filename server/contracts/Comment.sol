@@ -16,7 +16,7 @@ contract Comment is ContentBase {
     // Mapping to link comments to posts
     mapping(uint256 => uint256[]) private postComments;
 
-    event CommentCreated(uint256 id, string text, uint256 timestamp, address creator);
+    event CommentCreated(DataTypes.Comment);
 
     /* FUNCTIONS */
 
@@ -45,7 +45,7 @@ contract Comment is ContentBase {
 
         comments.push(newComment);
         postComments[postId].push(nextCommentId); // Link comment to post
-        emit CommentCreated(nextCommentId, text, block.timestamp, msg.sender);
+        emit CommentCreated(newComment);
         nextCommentId++;
         return newComment.id;
     }

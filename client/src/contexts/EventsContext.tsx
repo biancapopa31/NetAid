@@ -18,11 +18,12 @@ interface EventProviderProps {
 }
 
 export const EventProvider: React.FC<EventProviderProps> = ({children}) => {
-    const {postsContract, userProfileContract} = useContracts();
+    const {postsContract, userProfileContract, commentsContract} = useContracts();
 
     const [newPostAdded$, setNewPostAdded$] = useState<Observable<any> | undefined>(undefined);
     const [profileUpdated$, setProfileUpdated$] = useState<Observable<any> | undefined>(undefined);
     const [profileCreated$, setProfileCreated$] = useState<Observable<any> | undefined>(undefined);
+    const [commentCreated$, setCommentCreated$] = useState<Observable<any> | undefined>(undefined);
 
     useEffect(() => {
         if (!postsContract) {
@@ -75,12 +76,29 @@ export const EventProvider: React.FC<EventProviderProps> = ({children}) => {
 
     }, [userProfileContract]);
 
+    useEffect(() => {
+        if(!commentsContract)
+            setCommentCreated$(undefined);
+        else{
+            setCommentCreated$(new Observable<any[]>((subscriber) => {
+                const onEvent =(event) => {
+                    subscriber.next(event);
+                }
+
+                commentsContract.addListener("CommentCreated", onEvent);
+
+            }));
+        }
+
+    }, [userProfileContract]);
+
     return (
         <EventContext.Provider
             value={{
                 newPostAdded$,
                 profileUpdated$,
-                profileCreated$
+                profileCreated$,
+                commentCreated$
             }}>
             {children}
         </EventContext.Provider>

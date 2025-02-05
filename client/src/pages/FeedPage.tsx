@@ -28,35 +28,15 @@ export function FeedPage() {
 
         });
         return () => subs?.unsubscribe();
-    }, [newPostAdded$]);
+    }, [mapPost, newPostAdded$, posts, setPosts]);
 
     useEffect(() => {
         if (!profileCreated$) return;
         const sub = profileCreated$.subscribe((value) => {
-            toast.success('Profile created successfully!', {
-                position: "top-center",
-                autoClose: 5000,
-                hideProgressBar: true,
-                closeOnClick: false,
-                pauseOnHover: true,
-                draggable: true,
-                progress: undefined,
-                theme: "light",
-                transition: Bounce,
-            });
+            toast.success('Profile created successfully!');
         });
         return () => sub.unsubscribe();
     }, [profileCreated$]);
-
-    const handleNewPost = (post) => {
-    //     setPosts((prevPosts) => {
-    //         // Check if the post already exists to avoid duplicates
-    //         if (prevPosts.some(p => p.id === post.id)) {
-    //             return prevPosts;
-    //         }
-    //         return [post, ...prevPosts];
-    //     });
-    };
 
     if(isLoading) {
         return (
@@ -66,7 +46,7 @@ export function FeedPage() {
 
     return (
         <div className={"flex flex-col items-center m-2 gap-5"}>
-            <NewPostCard onNewPost={handleNewPost} />
+            <NewPostCard/>
                 {
                     posts?.map(post => (
                         <PostCard post={post} key={post.id} />

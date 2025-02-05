@@ -8,21 +8,26 @@ import { Comment, commentKeys } from "../interfaces/Comment";
 import commentAbi from "../abi/Comment.json";
 import { ethers } from "ethers";
 import decodeInterface from "../interfaces/decode-interface";
+import {useEvents} from "../contexts";
 
 const CommentBox = ({ postId }: { postId: string }): React.JSX.Element => {
     const [comments, setComments] = useState<Comment[]>([]);
     const [newComment, setNewComment] = useState<string>('');
     const { username } = useUserDetails();
+    const {commentCreated$} = useEvents();
     const { signer } = useContracts(); // Use signer instead of provider
-    const [commentsContract, setCommentsContract] = useState<ethers.Contract | null>(null);
+    const {commentsContract} = useContracts();
 
+    /*
+    * Chestia asta e ca sa asculti enetul de commentCreated
+    * */
     useEffect(() => {
-        if (signer) {
-            const contractAddress = "0x5FC8d32690cc91D4c39d9d3abcBD16989F875707"; // Replace with your contract address
-            const contract = new ethers.Contract(contractAddress, commentAbi, signer);
-            setCommentsContract(contract);
-        }
-    }, [signer]);
+        if (!commentCreated$) return;
+        const sub = commentCreated$.subscribe((value) => {
+            toast.success('Comment posted successfully!');
+        });
+        return () => sub.unsubscribe();
+    }, [commentCreated$]);
 
     useEffect(() => {
         fetchComments();
@@ -38,22 +43,11 @@ const CommentBox = ({ postId }: { postId: string }): React.JSX.Element => {
                 setComments(decodedComments);
             } catch (err) {
                 console.error("There was an error fetching comments:", err);
-                toast.error('There was an error fetching comments!', {
-                    position: "top-center",
-                    autoClose: 5000,
-                    hideProgressBar: false,
-                    closeOnClick: false,
-                    pauseOnHover: true,
-                    draggable: true,
-                    progress: undefined,
-                    theme: "light",
-                    transition: Bounce,
-                });
+                toast.error('There was an error fetching comments!');
             }
         }
     };
-
-    const handleCommentChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
+    const handleCommentChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         setNewComment(e.target.value);
     };
 
@@ -67,6 +61,11 @@ const CommentBox = ({ postId }: { postId: string }): React.JSX.Element => {
         URL.revokeObjectURL(url);
     };
 
+    /*
+    * De o parte din ce e aici nu cred ca o sa mai ai nevoide
+    * doar sa adaugi comentariul in setComments
+    * Nu m-am uitat foarte bine dar cred ca asa e
+    * */
     const handleCommentSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
         if (newComment.trim() && commentsContract) {
@@ -75,7 +74,7 @@ const CommentBox = ({ postId }: { postId: string }): React.JSX.Element => {
                 const receipt = await tx.wait();
                 
                 // Save receipt to a file
-                saveReceiptToFile(receipt);
+                // saveReceiptToFile(receipt);
                 
                 const events = receipt.events || [];
                 console.log("Transaction events:", events); // Log events for debugging
@@ -96,31 +95,11 @@ const CommentBox = ({ postId }: { postId: string }): React.JSX.Element => {
                     setComments(prevComments => [newCommentObj, ...prevComments].sort((a, b) => b.timestamp - a.timestamp));
                     setNewComment('');
                 } else {
-                    toast.error('Comment creation failed. Please try again!', {
-                        position: "top-center",
-                        autoClose: 5000,
-                        hideProgressBar: false,
-                        closeOnClick: false,
-                        pauseOnHover: true,
-                        draggable: true,
-                        progress: undefined,
-                        theme: "light",
-                        transition: Bounce,
-                    });
+                    toast.error('Comment creation failed. Please try again!');
                 }
             } catch (err) {
                 console.error("There was an error trying to submit the comment:", err);
-                toast.error('There was an error trying to submit the comment!', {
-                    position: "top-center",
-                    autoClose: 5000,
-                    hideProgressBar: false,
-                    closeOnClick: false,
-                    pauseOnHover: true,
-                    draggable: true,
-                    progress: undefined,
-                    theme: "light",
-                    transition: Bounce,
-                });
+                toast.error('There was an error trying to submit the comment!');
             }
         }
     };

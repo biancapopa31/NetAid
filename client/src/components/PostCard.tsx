@@ -1,12 +1,7 @@
-import {Avatar, Card, CardBody, CardFooter, CardHeader, Divider, Image, Textarea} from "@heroui/react";
+import {Avatar, Card, CardBody, CardFooter, CardHeader, Divider, Image} from "@heroui/react";
 import React, {JSX, useEffect, useState} from "react";
 import {Button} from "@heroui/button";
-import {Post} from "../interfaces/Post";
 import {useContracts} from "../contexts/ContractsContext";
-import {UserProfile, userProfileKeys} from "../interfaces/UserProfile";
-import decodeInterface from "../interfaces/decode-interface";
-import {pinata} from "../utils/config";
-import {pinataService} from "../utils/pinataService";
 import {AiFillLike, AiOutlineLike} from "react-icons/ai";
 import {FaGasPump, FaRegCommentAlt, FaDonate} from "react-icons/fa";
 import {ethers, BrowserProvider, Contract} from "ethers";
@@ -20,7 +15,7 @@ export const PostCard = ({ post }: { post: PostWithCreator }): JSX.Element => {
 
     const [liked, setLiked] = useState(false);
     const [likeCount, setLikeCount] = useState(0);
-    const {provider, postsContract, signer} = useContracts();
+    const {provider, postsContract, signer, donationContract} = useContracts();
     const [showComments, setShowComments] = useState(false);
     const [commentText, setCommentText] = useState("");
 
@@ -49,41 +44,22 @@ export const PostCard = ({ post }: { post: PostWithCreator }): JSX.Element => {
     const handleLike = async () => {
         if (liked) {
             try {
-                const tx = await postsContract.unlike(post.id);
+                const tx = await toast.promise(postsContract.unlike(post.id), {
+                    success: "Post unliked!", error: "There was an error trying to unlike post!", pending: "Processing unlike..."
+                });
                 await tx.wait();
                 setLikeCount(likeCount - 1);
             }catch (err){
                 console.error("There was an error trying to unlike post:", err);
-                toast.error('There was an error trying to unlike post!', {
-                    position: "top-center",
-                    autoClose: 5000,
-                    hideProgressBar: false,
-                    closeOnClick: false,
-                    pauseOnHover: true,
-                    draggable: true,
-                    progress: undefined,
-                    theme: "light",
-                    transition: Bounce,
-                });
             }
         } else {
             try {
-                const tx = await postsContract.like(post.id);
+                const tx = await toast.promise(postsContract.like(post.id),
+                    {success: "Post Liked!", error: "here was an error trying to like post!", pending: "Processing like..."});
                 await tx.wait();
                 setLikeCount(likeCount + 1);
             }catch (err){
                 console.error("There was an error trying to like post:", err);
-                toast.error('There was an error trying to like post!', {
-                    position: "top-center",
-                    autoClose: 5000,
-                    hideProgressBar: false,
-                    closeOnClick: false,
-                    pauseOnHover: true,
-                    draggable: true,
-                    progress: undefined,
-                    theme: "light",
-                    transition: Bounce,
-                });
             }
 
         }
@@ -112,12 +88,11 @@ export const PostCard = ({ post }: { post: PostWithCreator }): JSX.Element => {
 
     const handleDonate = async () => {
         try {
-            const tx = await postsContract.donate(post.id, { value: ethers.parseEther("0.01") }); // Example donation amount
+            const tx = await toast.promise(donationContract.donate(post.creator, { value: ethers.parseEther("1") }),
+                {success: "Donation successful!", error: "There was an error processing the donation!", pending: "Processing donation!"}); // Example donation amount
             await tx.wait();
-            toast.success('Donation successful!');
         } catch (err) {
             console.error("There was an error trying to donate:", err);
-            toast.error('There was an error trying to donate!');
         }
     };
 
@@ -131,7 +106,6 @@ export const PostCard = ({ post }: { post: PostWithCreator }): JSX.Element => {
                         size="md"
                         color="primary"
                         src = {post.profilePictureUrl}
-                        // src={process.env.REACT_APP_DEFAULT_PROFILE_PICTURE}
                     />
                     <div className="flex flex-col gap-1 items-start justify-center">
                         <h4 className="text-small font-semibold leading-none text-default-600">@{post?.username}</h4>
