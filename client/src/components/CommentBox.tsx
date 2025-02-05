@@ -15,23 +15,22 @@ const CommentBox = ({ postId }: { postId: string }): React.JSX.Element => {
     const [newComment, setNewComment] = useState<string>('');
     const { username } = useUserDetails();
     const {commentCreated$} = useEvents();
-    const { signer } = useContracts(); // Use signer instead of provider
-    const {commentsContract} = useContracts();
-
-    /*
-    * Chestia asta e ca sa asculti enetul de commentCreated
-    * */
-    useEffect(() => {
-        if (!commentCreated$) return;
-        const sub = commentCreated$.subscribe((value) => {
-            toast.success('Comment posted successfully!');
-        });
-        return () => sub.unsubscribe();
-    }, [commentCreated$]);
+    const { signer } = useContracts();
+    const {commentsContract, userProfileContract} = useContracts();
 
     useEffect(() => {
         fetchComments();
     }, [commentsContract, postId]);
+
+    const getUsernameFromPublicId = async (publicId: string): Promise<string> => {
+        try {
+            const profile = await userProfileContract.getProfile(publicId);
+            return profile.username;
+        } catch (err) {
+            console.error("There was an error fetching the username:", err);
+            return publicId; // Fallback to publicId if username fetch fails
+        }
+    };
 
     const fetchComments = async () => {
         if (commentsContract) {
@@ -40,32 +39,22 @@ const CommentBox = ({ postId }: { postId: string }): React.JSX.Element => {
                 const decodedComments = data.map((commentData: any) =>
                     decodeInterface<Comment>(commentKeys, commentData)
                 );
-                setComments(decodedComments);
+                const commentsWithUsernames = await Promise.all(decodedComments.map(async (comment) => {
+                    const username = await getUsernameFromPublicId(comment.creator);
+                    return { ...comment, creator: username };
+                }));
+                setComments(commentsWithUsernames);
             } catch (err) {
                 console.error("There was an error fetching comments:", err);
                 toast.error('There was an error fetching comments!');
             }
         }
     };
+
     const handleCommentChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         setNewComment(e.target.value);
     };
 
-    const saveReceiptToFile = (receipt: any) => {
-        const blob = new Blob([JSON.stringify(receipt, null, 2)], { type: 'application/json' });
-        const url = URL.createObjectURL(blob);
-        const a = document.createElement('a');
-        a.href = url;
-        a.download = 'transaction_receipt.json';
-        a.click();
-        URL.revokeObjectURL(url);
-    };
-
-    /*
-    * De o parte din ce e aici nu cred ca o sa mai ai nevoide
-    * doar sa adaugi comentariul in setComments
-    * Nu m-am uitat foarte bine dar cred ca asa e
-    * */
     const handleCommentSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
         if (newComment.trim() && commentsContract) {
@@ -73,29 +62,33 @@ const CommentBox = ({ postId }: { postId: string }): React.JSX.Element => {
                 const tx = await commentsContract.createComment(newComment.trim(), parseInt(postId));
                 const receipt = await tx.wait();
                 
-                // Save receipt to a file
-                // saveReceiptToFile(receipt);
-                
+                if (!receipt.status) {
+                    throw new Error('Transaction failed');
+                }
+                console.error("Transaction receipt:", receipt); // Log receipt for debugging
                 const events = receipt.events || [];
                 console.log("Transaction events:", events); // Log events for debugging
                 
-                const newCommentEvent = events.find(event => event.event === 'CommentCreated');
+                const newCommentEvent = events.find((event: any) => event.topics[0] === commentAbi.topics[0]);
                 if (newCommentEvent) {
                     const decodedEvent = commentsContract.interface.decodeEventLog(
                         'CommentCreated',
                         newCommentEvent.data,
                         newCommentEvent.topics
                     );
+                    const username = await getUsernameFromPublicId(decodedEvent.creator);
                     const newCommentObj: Comment = {
                         id: decodedEvent.id.toNumber(),
                         text: decodedEvent.text,
                         timestamp: decodedEvent.timestamp.toNumber(),
-                        creator: decodedEvent.creator
+                        creator: username
                     };
                     setComments(prevComments => [newCommentObj, ...prevComments].sort((a, b) => b.timestamp - a.timestamp));
                     setNewComment('');
                 } else {
-                    toast.error('Comment creation failed. Please try again!');
+                    console.error('Comment creation failed. Please try again!');
+                    fetchComments();
+                    toast.success('Comment posted successfully!');
                 }
             } catch (err) {
                 console.error("There was an error trying to submit the comment:", err);
@@ -130,11 +123,7 @@ const CommentBox = ({ postId }: { postId: string }): React.JSX.Element => {
                 <div className="comments-list w-full">
                     {comments.map((comment, index) => (
                         <div key={index} className="comment w-full">
-                            {commentKeys.map(key => (
-                                <div key={key}>
-                                    <strong>{key}:</strong> {comment[key as keyof Comment]}
-                                </div>
-                            ))}
+                            <strong>@{comment.creator}:</strong> {comment.text}
                         </div>
                     ))}
                 </div>

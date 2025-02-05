@@ -9,6 +9,8 @@ interface EventContextInterface {
     newPostAdded$: Observable<any[]> | undefined;
     profileUpdated$: Observable<any[]> | undefined;
     profileCreated$: Observable<any[]> | undefined;
+    commentCreated$: Observable<any[]> | undefined;
+    etherRetrieved$: Observable<any[]> | undefined;
 }
 
 const EventContext = createContext<EventContextInterface | undefined>(undefined);

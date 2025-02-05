@@ -25,7 +25,7 @@ import {useEvents} from "../contexts/EventsContext";
 import {ethers} from "ethers";
 
 export const MyProfilePage = () => {
-    const minGasLimit = 21000
+    const minGasLimit = 21000;
     const imageSize = 150;
 
     const {
@@ -128,7 +128,7 @@ export const MyProfilePage = () => {
         setApproveGasLimit(false);
         setGasLimit(minGasLimit);
         setIsEditing(!isEditing);
-    }
+    };
 
     const handleEditIconClick = () => {
         if (fileInputRef.current) {
