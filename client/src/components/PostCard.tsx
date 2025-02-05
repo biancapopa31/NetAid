@@ -95,48 +95,18 @@ export const PostCard = ({ post }: { post: PostWithCreator }): JSX.Element => {
 
     const handleAddComment = async () => {
         if (!commentText.trim()) {
-            toast.error('Please enter a comment', {
-                position: "top-center",
-                autoClose: 5000,
-                hideProgressBar: false,
-                closeOnClick: false,
-                pauseOnHover: true,
-                draggable: true,
-                progress: undefined,
-                theme: "light",
-                transition: Bounce,
-            });
+            toast.error('Please enter a comment');
             return;
         }
 
         try {
             const tx = await postsContract.addComment(post.id, commentText.trim());
             await tx.wait();
-            toast.success('Comment added successfully!', {
-                position: "top-center",
-                autoClose: 5000,
-                hideProgressBar: false,
-                closeOnClick: false,
-                pauseOnHover: true,
-                draggable: true,
-                progress: undefined,
-                theme: "light",
-                transition: Bounce,
-            });
+            toast.success('Comment added successfully!');
             setCommentText("");
         } catch (err) {
             console.error("There was an error trying to add comment:", err);
-            toast.error('There was an error trying to add comment!', {
-                position: "top-center",
-                autoClose: 5000,
-                hideProgressBar: false,
-                closeOnClick: false,
-                pauseOnHover: true,
-                draggable: true,
-                progress: undefined,
-                theme: "light",
-                transition: Bounce,
-            });
+            toast.error('There was an error trying to add comment!');
         }
     };
 
@@ -144,30 +114,10 @@ export const PostCard = ({ post }: { post: PostWithCreator }): JSX.Element => {
         try {
             const tx = await postsContract.donate(post.id, { value: ethers.parseEther("0.01") }); // Example donation amount
             await tx.wait();
-            toast.success('Donation successful!', {
-                position: "top-center",
-                autoClose: 5000,
-                hideProgressBar: false,
-                closeOnClick: false,
-                pauseOnHover: true,
-                draggable: true,
-                progress: undefined,
-                theme: "light",
-                transition: Bounce,
-            });
+            toast.success('Donation successful!');
         } catch (err) {
             console.error("There was an error trying to donate:", err);
-            toast.error('There was an error trying to donate!', {
-                position: "top-center",
-                autoClose: 5000,
-                hideProgressBar: false,
-                closeOnClick: false,
-                pauseOnHover: true,
-                draggable: true,
-                progress: undefined,
-                theme: "light",
-                transition: Bounce,
-            });
+            toast.error('There was an error trying to donate!');
         }
     };
 
@@ -222,7 +172,7 @@ export const PostCard = ({ post }: { post: PostWithCreator }): JSX.Element => {
                             Comment
                         </Button>
                     </div>
-                    <Button variant={"light"} color={"danger"} className="text-white" onPress={handleDonate}>
+                    <Button variant={"light"} color={"primary"} onPress={handleDonate}>
                         <FaDonate />
                         Make Donation
                     </Button>

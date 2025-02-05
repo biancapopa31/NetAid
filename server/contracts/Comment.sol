@@ -9,14 +9,8 @@ import "./Post.sol";
 
 contract Comment is ContentBase {
 
-    struct CommentType{
-        uint256 id;
-        string text;
-        uint256 timestamp;
-        address creator;
-    }
 
-    CommentType[] public comments;
+    DataTypes.Comment[] public comments;
     uint256 public nextCommentId;
 
     // Mapping to link comments to posts
@@ -30,8 +24,8 @@ contract Comment is ContentBase {
         return "This is a test from Comment contract";
     }
 
-    function transformContentInComment(Content memory content) internal pure virtual returns (CommentType memory comment) {
-        return CommentType({
+    function transformContentInComment(Content memory content) internal pure virtual returns (DataTypes.Comment memory comment) {
+        return DataTypes.Comment({
             id: content.id, 
             text: content.text,
             timestamp : content.timestamp,
@@ -42,7 +36,7 @@ contract Comment is ContentBase {
 
     // Create a new comment for a specific post
     function createComment(string memory text, uint256 postId) public notEmpty(text, '') returns (uint256) {
-        CommentType memory newComment = CommentType({
+        DataTypes.Comment memory newComment = DataTypes.Comment({
             id: nextCommentId,
             text: text,
             timestamp: block.timestamp,
@@ -57,7 +51,7 @@ contract Comment is ContentBase {
     }
 
     // Get all comments for a specific post
-    function getCommentsForPost(uint256 postId) public view returns (CommentType[] memory) {
+    function getCommentsForPost(uint256 postId) public view returns (DataTypes.Comment[] memory) {
         uint256[] memory commentIds = postComments[postId];
         uint256 validCommentsCount = 0;
 
@@ -67,7 +61,7 @@ contract Comment is ContentBase {
             }
         }
 
-        CommentType[] memory postCommentsArray = new CommentType[](validCommentsCount);
+        DataTypes.Comment[] memory postCommentsArray = new DataTypes.Comment[](validCommentsCount);
         uint256 index = 0;
 
         for (uint256 i = 0; i < commentIds.length; i++) {
@@ -82,7 +76,7 @@ contract Comment is ContentBase {
     
     // Retrieve comment details
     function getComment(uint256 commentId) public view 
-        returns (CommentType memory) 
+        returns (DataTypes.Comment memory) 
     {
         require(commentId < nextCommentId, "Comment does not exist");
         return comments[commentId];

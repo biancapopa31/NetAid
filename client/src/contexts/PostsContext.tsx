@@ -11,7 +11,7 @@ import {Post, postKeys} from "../interfaces/Post";
 import {PostWithCreator} from "../interfaces/PostWithCreator";
 import {toast} from "react-toastify";
 import warning = toast.warning;
-import {useMapPost} from "../hooks/useGenerateFullPost";
+import {useFetchFullPost} from "../hooks/useFetchFullPost";
 
 interface PostsContextProps {
     posts: PostWithCreator[] | null;
@@ -35,7 +35,7 @@ export const PostsProvider: React.FC<PostsProviderProps> = ({ children }) => {
     const [isLoading, setIsLoading] = React.useState(true);
     const {userProfileContract, postsContract} = useContracts();
     const [posts, setPosts] = useState<PostWithCreator[]|null>(null);
-    const mapPost = useMapPost();
+    const mapPost = useFetchFullPost();
 
 
     const getAllPosts = useCallback(async () => {

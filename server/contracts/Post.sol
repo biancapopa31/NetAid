@@ -31,23 +31,6 @@ contract Post is ContentBase, ERC721Enumerable {
 
     function getAllPosts() public view returns ( Content[] memory) {
 
-        // uint256 postCount = nextContentId;
-        // uint256[] memory postIds = new uint256[](postCount);
-        // string[] memory texts = new string[](postCount);
-        // string[] memory photoCids = new string[](postCount);
-        // address[] memory creators = new address[](postCount);
-        // uint256[] memory timestamps = new uint256[](postCount);
-
-        // for (uint256 i = 0; i < postCount; i++) {
-        //     Content memory c = getContent(i);
-        //     postIds[i] = c.id;
-        //     texts[i] = c.text;
-        //     photoCids[i] = c.photoCid;
-        //     creators[i] = c.creator; 
-        //     timestamps[i] = c.timestamp;
-        // }
-        // return (postIds, texts, creators, timestamps);
-
         return super.getAllContent();
     }
 

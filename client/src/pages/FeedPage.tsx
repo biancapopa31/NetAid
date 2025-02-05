@@ -7,13 +7,13 @@ import { useEvents } from "../contexts/EventsContext";
 import { Bounce, toast, ToastContainer } from "react-toastify";
 import {usePosts} from "../contexts";
 import {Spinner} from "@heroui/react";
-import {useGenerateFullPost, useMapPost} from "../hooks/useGenerateFullPost";
+import {useFetchFullPost} from "../hooks/useFetchFullPost";
 import {PostWithCreator} from "../interfaces/PostWithCreator";
 
 export function FeedPage() {
     const {posts, isLoading, setPosts} = usePosts();
     const { newPostAdded$, profileCreated$ } = useEvents();
-    const mapPost = useMapPost();
+    const mapPost = useFetchFullPost();
 
     useEffect(() => {
         if (!newPostAdded$) return;
