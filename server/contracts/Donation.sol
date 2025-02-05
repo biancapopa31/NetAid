@@ -50,4 +50,9 @@ contract Donation{
         UserProfileContract.setDonationContract();
     }
 
+    function getAddress() external view returns (address){
+        return address(this);
+    }
+
+
 }

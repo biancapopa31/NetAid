@@ -121,7 +121,7 @@
             "type": "address"
           }
         ],
-        "internalType": "struct Comment.CommentType",
+        "internalType": "struct DataTypes.Comment",
         "name": "",
         "type": "tuple"
       }
@@ -162,7 +162,7 @@
             "type": "address"
           }
         ],
-        "internalType": "struct Comment.CommentType[]",
+        "internalType": "struct DataTypes.Comment[]",
         "name": "",
         "type": "tuple[]"
       }

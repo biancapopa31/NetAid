@@ -18,10 +18,15 @@
             "internalType": "string",
             "name": "profilePictureCdi",
             "type": "string"
+          },
+          {
+            "internalType": "uint256",
+            "name": "balance",
+            "type": "uint256"
           }
         ],
         "indexed": false,
-        "internalType": "struct UserProfile.Profile",
+        "internalType": "struct DataTypes.Profile",
         "name": "_profile",
         "type": "tuple"
       }
@@ -48,10 +53,15 @@
             "internalType": "string",
             "name": "profilePictureCdi",
             "type": "string"
+          },
+          {
+            "internalType": "uint256",
+            "name": "balance",
+            "type": "uint256"
           }
         ],
         "indexed": false,
-        "internalType": "struct UserProfile.Profile",
+        "internalType": "struct DataTypes.Profile",
         "name": "_profile",
         "type": "tuple"
       }
@@ -78,6 +88,30 @@
       }
     ],
     "name": "createNewProfile",
+    "outputs": [
+      {
+        "internalType": "bool",
+        "name": "",
+        "type": "bool"
+      }
+    ],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "user",
+        "type": "address"
+      },
+      {
+        "internalType": "uint256",
+        "name": "amount",
+        "type": "uint256"
+      }
+    ],
+    "name": "decUserBalance",
     "outputs": [
       {
         "internalType": "bool",
@@ -151,6 +185,19 @@
   },
   {
     "inputs": [],
+    "name": "getAddress",
+    "outputs": [
+      {
+        "internalType": "address",
+        "name": "",
+        "type": "address"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
     "name": "getAllUsersAddrs",
     "outputs": [
       {
@@ -188,14 +235,50 @@
             "internalType": "string",
             "name": "profilePictureCdi",
             "type": "string"
+          },
+          {
+            "internalType": "uint256",
+            "name": "balance",
+            "type": "uint256"
           }
         ],
-        "internalType": "struct UserProfile.Profile",
+        "internalType": "struct DataTypes.Profile",
         "name": "",
         "type": "tuple"
       }
     ],
     "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "user",
+        "type": "address"
+      },
+      {
+        "internalType": "uint256",
+        "name": "amount",
+        "type": "uint256"
+      }
+    ],
+    "name": "incUserBalance",
+    "outputs": [
+      {
+        "internalType": "bool",
+        "name": "",
+        "type": "bool"
+      }
+    ],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "setDonationContract",
+    "outputs": [],
+    "stateMutability": "nonpayable",
     "type": "function"
   },
   {
