@@ -1,23 +1,26 @@
-import {Avatar, Card, CardBody, CardFooter, CardHeader, Divider, Image} from "@heroui/react";
+import {Avatar, Card, CardBody, CardFooter, CardHeader, Divider, Image, useDisclosure} from "@heroui/react";
 import React, {JSX, useEffect, useState} from "react";
 import {Button} from "@heroui/button";
-import {useContracts} from "../contexts/ContractsContext";
+import {useContracts} from "../contexts";
 import {AiFillLike, AiOutlineLike} from "react-icons/ai";
 import {FaGasPump, FaRegCommentAlt, FaDonate} from "react-icons/fa";
-import {ethers, BrowserProvider, Contract} from "ethers";
 import {useEstimatedGas, useEstimatedGasConditioned} from "../hooks";
 import {useGasConvertor} from "../hooks/useGasConvertor";
-import {Bounce, toast, ToastContainer} from "react-toastify";
+import {toast} from "react-toastify";
 import CommentBox from './CommentBox';
 import {PostWithCreator} from "../interfaces/PostWithCreator";
+import {DonationCard} from "./DonationCard";
 
 export const PostCard = ({ post }: { post: PostWithCreator }): JSX.Element => {
 
     const [liked, setLiked] = useState(false);
     const [likeCount, setLikeCount] = useState(0);
-    const {provider, postsContract, signer, donationContract} = useContracts();
+    const {provider, postsContract, signer} = useContracts();
     const [showComments, setShowComments] = useState(false);
     const [commentText, setCommentText] = useState("");
+
+    const {isOpen, onOpen, onClose} = useDisclosure();
+
 
     const likeGas = useEstimatedGas(postsContract, (c) => c.like, post.id);
     const unlikeGas = useEstimatedGasConditioned(postsContract, (c) => c.unlike, likeCount > 0, post.id as any);
@@ -87,13 +90,14 @@ export const PostCard = ({ post }: { post: PostWithCreator }): JSX.Element => {
     };
 
     const handleDonate = async () => {
-        try {
-            const tx = await toast.promise(donationContract.donate(post.creator, { value: ethers.parseEther("1") }),
-                {success: "Donation successful!", error: "There was an error processing the donation!", pending: "Processing donation!"}); // Example donation amount
-            await tx.wait();
-        } catch (err) {
-            console.error("There was an error trying to donate:", err);
-        }
+        onOpen();
+        // try {
+        //     const tx = await toast.promise(donationContract.donate(post.creator, { value: ethers.parseEther("1") }),
+        //         {success: "Donation successful!", error: "There was an error processing the donation!", pending: "Processing donation!"});
+        //     await tx.wait();
+        // } catch (err) {
+        //     console.error("There was an error trying to donate:", err);
+        // }
     };
 
     return (
@@ -146,10 +150,11 @@ export const PostCard = ({ post }: { post: PostWithCreator }): JSX.Element => {
                             Comment
                         </Button>
                     </div>
-                    <Button variant={"light"} color={"primary"} onPress={handleDonate}>
+                    <Button variant={"light"} color={"primary"} onPress={onOpen}>
                         <FaDonate />
                         Make Donation
                     </Button>
+                    <DonationCard isOpen={isOpen} onClose={onClose} post={post}/>
                 </div>
                 {showComments && (
                     <div className="w-full mt-4">
