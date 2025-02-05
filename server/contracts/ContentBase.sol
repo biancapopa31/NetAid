@@ -21,6 +21,10 @@ contract ContentBase {
         require(bytes(text).length > 0 || bytes(photoCid).length > 0, "Content cannot be empty");
         _;
     }
+    modifier exists(uint256 _id){
+        require(_id < nextContentId, "Content does not exist" );
+        _;
+    }
 
     function createContent(string memory text, string memory photoCid) internal returns (Content memory) {
         uint256 contentId = nextContentId;

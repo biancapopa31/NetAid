@@ -4,8 +4,6 @@ pragma solidity ^0.8.27;
 import "./ContentBase.sol";
 import "./Post.sol";
 
-/*E facut cu gettere*/
-
 
 contract Comment is ContentBase {
 
