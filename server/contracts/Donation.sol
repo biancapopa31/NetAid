@@ -22,7 +22,7 @@ contract Donation{
     }
 
     function donate(address userAddress) payable public  {
-        require(msg.value > 0);
+        require(msg.value > 0, "msg.value can't be 0");
         UserProfileContract.incUserBalance(userAddress, msg.value);
 
         emit DonationReceived(msg.sender, msg.value);

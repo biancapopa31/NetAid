@@ -24,7 +24,7 @@ contract Post is ContentBase, ERC721Enumerable {
         return newPost.id;
     }
 
-    function getPost(uint256 postId) public view returns (uint256 , string memory, string memory, address, uint256 ) {
+    function getPost(uint256 postId) public view exists(postId) returns (uint256 , string memory, string memory, address, uint256 ) {
         Content memory c = getContent(postId);
         return (postId, c.text, c.photoCid, c.creator, c.timestamp);
     }

@@ -2,125 +2,144 @@ const { expect } = require("chai");
 const { ethers } = require("hardhat");
 
 describe("UserProfile", function () {
-    let UserProfile, userProfile, owner, addr1, addr2;
+  let UserProfile;
+  let userProfile;
+  let owner;
+  let addr1;
+  let addr2;
+  let donationContract;
 
-    beforeEach(async () => {
-        UserProfile = await ethers.getContractFactory("UserProfile");
-        userProfile = await UserProfile.deploy();
-        // await userProfile.deployed();
-        [owner, addr1, addr2] = await ethers.getSigners();
+  beforeEach(async function () {
+    // Get test accounts
+    [owner, addr1, addr2, donationContract] = await ethers.getSigners();
+
+    // Deploy the contract
+    const UserProfileFactory = await ethers.getContractFactory("UserProfile");
+    userProfile = await UserProfileFactory.deploy();
+
+
+    // Set donation contract
+    await userProfile.connect(donationContract).setDonationContract();
+  });
+
+  describe("Profile Creation", function () {
+    it("Should create a new profile", async function () {
+      const username = "testuser";
+      const bio = "test bio";
+      const profilePic = "bafkreielw242z5adle6zcqeml5k3vz3gwgsurvf3w7hnbgvtartlxauezy";
+
+      await expect(
+        userProfile.connect(addr1).createNewProfile(username, bio, profilePic)
+      )
+        .to.emit(userProfile, "ProfileCreated")
+        .withArgs([username, bio, profilePic, 0]);
+
+      const profile = await userProfile.getProfile(addr1.address);
+      expect(profile.username).to.equal(username);
+      expect(profile.bio).to.equal(bio);
+      expect(profile.profilePictureCdi).to.equal(profilePic);
+      expect(profile.balance).to.equal(0);
     });
 
-    describe("Profile Creation", function () {
-        it("Should allow a user to create a new profile with a unique username", async function () {
-            const username = "testuser";
-            const bio = "This is a test bio";
-            const profilePictureURI = "https://example.com/pic";
-
-            await expect(
-                userProfile.createNewProfile(username, bio, profilePictureURI)
-            )
-                .to.emit(userProfile, "ProfileCreated")
-                .withArgs(owner.address, username, bio, profilePictureURI);
-
-            const profile = await userProfile.getProfile(owner.address);
-            expect(profile.username).to.equal(username);
-            expect(profile.bio).to.equal(bio);
-            expect(profile.profilePictureURI).to.equal(profilePictureURI);
-
-            const userAddresses = await userProfile.getAllUsersAddrs();
-            expect(userAddresses).to.include(owner.address);
-        });
-
-        it("Should prevent creating a profile with a taken username", async function () {
-            const username = "testuser";
-            const bio = "This is a test bio";
-            const profilePictureURI = "https://example.com/pic";
-
-            await userProfile.createNewProfile(username, bio, profilePictureURI);
-
-            await expect(
-                userProfile.connect(addr1).createNewProfile(username, bio, profilePictureURI)
-            ).to.be.revertedWith("Username is taken");
-        });
-
-        it("Should prevent creating a profile if one already exists for the user", async function () {
-            const username = "testuser";
-            const bio = "This is a test bio";
-            const profilePictureURI = "https://example.com/pic";
-
-            await userProfile.createNewProfile(username, bio, profilePictureURI);
-
-            await expect(
-                userProfile.createNewProfile("newuser", "new bio", "https://newpic.com")
-            ).to.be.revertedWith("Profile already exists for this address");
-        });
+    it("Should fail if profile already exists", async function () {
+      await userProfile.connect(addr1).createNewProfile("user1", "bio1", "pic1");
+      
+      await expect(
+        userProfile.connect(addr1).createNewProfile("user2", "bio2", "pic2")
+      ).to.be.revertedWith("Profile already exists for this address");
     });
 
-    describe("Profile Editing", function () {
-        it("Should allow a user to edit their profile with a new unique username", async function () {
-            const oldUsername = "olduser";
-            const newUsername = "newuser";
-            const bio = "Updated bio";
-            const profilePictureURI = "https://example.com/newpic";
-
-            await userProfile.createNewProfile(oldUsername, "old bio", "https://oldpic.com");
-
-            await expect(
-                userProfile.editProfile(newUsername, bio, profilePictureURI)
-            )
-                .to.emit(userProfile, "ProfileUpdated")
-                .withArgs(owner.address, newUsername, bio, profilePictureURI);
-
-            const profile = await userProfile.getProfile(owner.address);
-            expect(profile.username).to.equal(newUsername);
-            expect(profile.bio).to.equal(bio);
-            expect(profile.profilePictureURI).to.equal(profilePictureURI);
-        });
-
-        it("Should prevent editing to a username that is already taken", async function () {
-            const username1 = "user1";
-            const username2 = "user2";
-            const bio = "Test bio";
-            const profilePictureURI = "https://example.com/pic";
-
-            await userProfile.createNewProfile(username1, bio, profilePictureURI);
-            await userProfile.connect(addr1).createNewProfile(username2, bio, profilePictureURI);
-
-            await expect(
-                userProfile.editProfile(username2, "new bio", "https://newpic.com")
-            ).to.be.revertedWith("Username is taken");
-        });
+    it("Should fail if username is empty", async function () {
+      await expect(
+        userProfile.connect(addr1).createNewProfile("", "bio", "pic")
+      ).to.be.revertedWith("Username is required");
     });
 
-    describe("Profile Retrieval", function () {
-        it("Should retrieve the correct profile for a given user", async function () {
-            const username = "testuser";
-            const bio = "This is a test bio";
-            const profilePictureURI = "https://example.com/pic";
-
-            await userProfile.createNewProfile(username, bio, profilePictureURI);
-
-            const profile = await userProfile.getProfile(owner.address);
-            expect(profile.username).to.equal(username);
-            expect(profile.bio).to.equal(bio);
-            expect(profile.profilePictureURI).to.equal(profilePictureURI);
-        });
-
-        it("Should return an empty profile for an address with no profile", async function () {
-            const profile = await userProfile.getProfile(addr1.address);
-            expect(profile.username).to.equal("");
-            expect(profile.bio).to.equal("");
-            expect(profile.profilePictureURI).to.equal("");
-        });
-
-        it("Should return all user addresses", async function () {
-            await userProfile.createNewProfile("user1", "bio1", "https://pic1.com");
-            await userProfile.connect(addr1).createNewProfile("user2", "bio2", "https://pic2.com");
-
-            const userAddresses = await userProfile.getAllUsersAddrs();
-            expect(userAddresses).to.include(owner.address);
-            expect(userAddresses).to.include(addr1.address);
-        });
+    it("Should fail if username is taken", async function () {
+      await userProfile.connect(addr1).createNewProfile("user1", "bio1", "pic1");
+      
+      await expect(
+        userProfile.connect(addr2).createNewProfile("user1", "bio2", "pic2")
+      ).to.be.revertedWith("Username is taken");
     });
+  });
+
+  describe("Profile Editing", function () {
+    beforeEach(async function () {
+      await userProfile.connect(addr1).createNewProfile("user1", "bio1", "pic1");
+    });
+
+    it("Should edit an existing profile", async function () {
+      const newUsername = "newuser";
+      const newBio = "new bio";
+      const newPic = "new pic";
+
+      await expect(
+        userProfile.connect(addr1).editProfile(newUsername, newBio, newPic)
+      )
+        .to.emit(userProfile, "ProfileUpdated")
+        .withArgs([newUsername, newBio, newPic, 0]);
+
+      const profile = await userProfile.getProfile(addr1.address);
+      expect(profile.username).to.equal(newUsername);
+      expect(profile.bio).to.equal(newBio);
+      expect(profile.profilePictureCdi).to.equal(newPic);
+    });
+  });
+
+  describe("Balance Management", function () {
+    beforeEach(async function () {
+      await userProfile.connect(addr1).createNewProfile("user1", "bio1", "pic1");
+    });
+
+    it("Should increase user balance", async function () {
+      await userProfile.connect(donationContract).incUserBalance(addr1.address, 100);
+      const profile = await userProfile.getProfile(addr1.address);
+      expect(profile.balance).to.equal(100);
+    });
+
+    it("Should decrease user balance", async function () {
+      await userProfile.connect(donationContract).incUserBalance(addr1.address, 100);
+      await userProfile.connect(donationContract).decUserBalance(addr1.address, 50);
+      const profile = await userProfile.getProfile(addr1.address);
+      expect(profile.balance).to.equal(50);
+    });
+
+    it("Should only allow donation contract to modify balance", async function () {
+      await expect(
+        userProfile.connect(addr2).incUserBalance(addr1.address, 100)
+      ).to.be.revertedWith("You are not the donation contract");
+
+      await expect(
+        userProfile.connect(addr2).decUserBalance(addr1.address, 50)
+      ).to.be.revertedWith("You are not the donation contract");
+    });
+  });
+
+  describe("Query Functions", function () {
+    it("Should check if user exists", async function () {
+      expect(await userProfile.connect(addr1).existsUser()).to.be.false;
+      
+      await userProfile.connect(addr1).createNewProfile("user1", "bio1", "pic1");
+      expect(await userProfile.connect(addr1).existsUser()).to.be.true;
+    });
+
+    it("Should check if username exists", async function () {
+      const username = "testuser";
+      expect(await userProfile.existsUserByUserId(username)).to.be.false;
+      
+      await userProfile.connect(addr1).createNewProfile(username, "bio1", "pic1");
+      expect(await userProfile.existsUserByUserId(username)).to.be.true;
+    });
+
+    it("Should get all user addresses", async function () {
+      await userProfile.connect(addr1).createNewProfile("user1", "bio1", "pic1");
+      await userProfile.connect(addr2).createNewProfile("user2", "bio2", "pic2");
+
+      const addresses = await userProfile.getAllUsersAddrs();
+      expect(addresses).to.include(addr1.address);
+      expect(addresses).to.include(addr2.address);
+      expect(addresses.length).to.equal(2);
+    });
+  });
 });
