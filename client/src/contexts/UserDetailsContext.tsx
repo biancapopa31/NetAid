@@ -19,6 +19,8 @@ interface UserDetails {
     setProfilePictureCdi: React.Dispatch<React.SetStateAction<string>>;
     profilePictureUrl: string;
     setProfilePictureUrl: React.Dispatch<React.SetStateAction<string>>;
+    balance: number;
+    setBalance: React.Dispatch<React.SetStateAction<string>>;
 }
 
 const initialState: UserDetails = {
@@ -32,6 +34,8 @@ const initialState: UserDetails = {
     setProfilePictureCdi: () => {},
     profilePictureUrl: '',
     setProfilePictureUrl: () => {},
+    balance: 0,
+    setBalance: () => {},
 }
 
 const UserDetailsContext = React.createContext<UserDetails>(initialState);
@@ -47,6 +51,7 @@ export const UserDetailsProvider: React.FC<UserDetailsProviderProps> = ({ childr
    const [profilePictureCdi, setProfilePictureCdi] = useState<string>(process.env.REACT_APP_DEFAULT_AVATAR_CID);
    const [profilePictureUrl, setProfilePictureUrl] = useState<string>('');
    const {userProfileContract, signer} = useContracts();
+   const [balance, setBalance] = useState<number>(0);
 
     const checkUser = useCallback(async () => {
         try {
@@ -64,6 +69,7 @@ export const UserDetailsProvider: React.FC<UserDetailsProviderProps> = ({ childr
 
             setUsername(profile.username);
             setBio(profile.bio);
+            setBalance(profile.balance);
             if(profile.profilePictureCid){
                 setProfilePictureCdi(profile.profilePictureCid);
                 const profilePictureUrl = await pinataService.convertCid(profile.profilePictureCid);
@@ -95,6 +101,7 @@ export const UserDetailsProvider: React.FC<UserDetailsProviderProps> = ({ childr
             bio, setBio,
             profilePictureCdi, setProfilePictureCdi,
             profilePictureUrl, setProfilePictureUrl,
+            balance,
         } as UserDetails}>
             {children}
         </UserDetailsContext.Provider>

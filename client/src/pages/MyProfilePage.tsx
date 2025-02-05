@@ -13,7 +13,7 @@ import {
 } from "@heroui/react";
 import {useContracts} from "../contexts/ContractsContext";
 import {Button} from "@heroui/button";
-import {FaGasPump, FaRegEdit} from "react-icons/fa";
+import {FaEthereum, FaGasPump, FaRegEdit} from "react-icons/fa";
 import {pinataService} from "../utils/pinataService";
 import {useEstimatedGasConditioned} from "../hooks";
 import {MdDeleteOutline} from "react-icons/md";
@@ -22,6 +22,7 @@ import {IoIosRemoveCircleOutline} from "react-icons/io";
 import {useGasConvertor} from "../hooks/useGasConvertor";
 import {Bounce, toast, ToastContainer} from "react-toastify";
 import {useEvents} from "../contexts/EventsContext";
+import {ethers} from "ethers";
 
 export const MyProfilePage = () => {
     const minGasLimit = 21000
@@ -35,10 +36,11 @@ export const MyProfilePage = () => {
         setUsername,
         setProfilePictureCdi,
         setProfilePictureUrl,
-        profilePictureCdi
+        profilePictureCdi,
+        balance,
     } = useUserDetails();
-    const {signer, userProfileContract, provider} = useContracts();
-    const {profileUpdated$} = useEvents();
+    const {signer, userProfileContract, provider, donationContract} = useContracts();
+    const {profileUpdated$, etherRetrieved$} = useEvents();
 
     const [isEditing, setIsEditing] = useState(false);
     const [newUserName, setNewUserName] = useState(username);
@@ -51,6 +53,22 @@ export const MyProfilePage = () => {
     const ethCost = useGasConvertor(provider, gasCost?.gas);
     const gasLimitEth = useGasConvertor(provider, BigInt(gasLimit));
     const [approveGasLimit, setApproveGasLimit] = useState<boolean>(false);
+
+    useEffect(() => {
+        if (!profileUpdated$) return;
+        const sub = profileUpdated$.subscribe((value) => {
+            toast.success('Profile updated successfully!');
+        });
+        return () => sub.unsubscribe();
+    }, [profileUpdated$]);
+
+    useEffect(() => {
+        if (!etherRetrieved$) return;
+        const sub = etherRetrieved$.subscribe((value) => {
+            toast.success('Ether withdrawn successfully!');
+        });
+        return () => sub.unsubscribe();
+    }, [etherRetrieved$]);
 
     useEffect(() => {
         if (bio !== newBio) {
@@ -74,7 +92,7 @@ export const MyProfilePage = () => {
         let usernameTaken = false;
 
         let transactionOptions = {};
-        if(approveGasLimit){
+        if (approveGasLimit) {
             transactionOptions = {gasLimit: gasLimit};
         }
 
@@ -95,22 +113,13 @@ export const MyProfilePage = () => {
                     const profilePictureUrl = await pinataService.convertCid(profilePictureCdi);
                     setProfilePictureUrl(profilePictureUrl);
                 } else {
-                    const tx = await userProfileContract.editProfile(newUserName.trim(), newBio.trim(), '', transactionOptions);
+                    const tx = await toast.promise(userProfileContract.editProfile(newUserName.trim(), newBio.trim(), '', transactionOptions),
+                        {pending: "Updating account...", error: "There was an error updating the account!"});
                     tx.wait();
                 }
-            }catch (error) {
-                console.error("There was an error updating the account!",error);
-                toast.error('There was an error updating the account!', {
-                    position: "top-center",
-                    autoClose: 5000,
-                    hideProgressBar: false,
-                    closeOnClick: false,
-                    pauseOnHover: true,
-                    draggable: true,
-                    progress: undefined,
-                    theme: "light",
-                    transition: Bounce,
-                });
+            } catch (error) {
+                console.error("There was an error updating the account!", error);
+                toast.error('There was an error updating the account!');
             }
             setUsername(newUserName.trim());
             setBio(newBio.trim());
@@ -141,6 +150,16 @@ export const MyProfilePage = () => {
         setCalculateGas(false);
     }
 
+    const handleWithdraw = async () => {
+        try{
+            const tx = await toast.promise(donationContract.retreive(), {pending: "Withdrawing ether...", error: "There was an error withdrawing!"});
+            await tx.wait();
+            window.location.reload();
+        }catch (error) {
+            console.error("There was an error withdrawing!", error);
+        }
+
+    };
     return (
         <div className="flex flex-col items-center min-h-screen">
             <Card className="w-full max-w-[1024px] p-4 pb-0">
@@ -232,6 +251,18 @@ export const MyProfilePage = () => {
                         :
                         <p>{bio}</p>
                     }
+                    <p className={"text-small pt-3"}>Your current balance:</p>
+                    <div className={"flex flex-row gap-5 pt"}>
+                        <div className="flex flex-row gap-1 items-center">
+                            <p className={" "}>{ethers.formatEther(balance)}</p>
+                            <FaEthereum/>
+                        </div>
+                        {!isEditing && (
+                            <Button color={"primary"} variant={"ghost"} onPress={handleWithdraw} className={"w-fit"}>
+                                Withdraw your ETH
+                            </Button>
+                        )}
+                    </div>
 
                 </CardBody>
                 <Divider/>
@@ -255,12 +286,12 @@ export const MyProfilePage = () => {
                         : <div className={"flex flex-row justify-between w-full gap-3"}>
                             <div className={"flex flex-row gap-3 pt-0x"}>
                                 <Checkbox
-                                          color="primary"
-                                          size='sm'
-                                          onChange={() => {
-                                              setApproveGasLimit(!approveGasLimit)
-                                          }}
-                                          isSelected={approveGasLimit}
+                                    color="primary"
+                                    size='sm'
+                                    onChange={() => {
+                                        setApproveGasLimit(!approveGasLimit)
+                                    }}
+                                    isSelected={approveGasLimit}
                                 >
                                 </Checkbox>
                                 <Input
@@ -273,7 +304,8 @@ export const MyProfilePage = () => {
                                     isDisabled={!approveGasLimit}
                                     className={"w-fit gap-3"}
                                 ></Input>
-                                <p className={!approveGasLimit ? "text-small pt-3 text-default-400" : "text-small pt-3"}>Gas limit in ETH: {gasLimitEth?.eth}</p>
+                                <p className={!approveGasLimit ? "text-small pt-3 text-default-400" : "text-small pt-3"}>Gas
+                                    limit in ETH: {gasLimitEth?.eth}</p>
                             </div>
                             <div className={"flex flex-col gap-2"}>
                                 <div className={"flex flex-row gap-3 align-middle justify-center items-center"}>

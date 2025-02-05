@@ -1,5 +1,5 @@
 import {PostWithCreator} from "../interfaces/PostWithCreator";
-import React, {JSX, useEffect, useState} from "react";
+import React, {JSX, useState} from "react";
 import {Button} from "@heroui/button";
 import {
     Divider,
@@ -15,14 +15,10 @@ import {
 import {toast} from "react-toastify";
 import {ethers} from "ethers";
 import {useContracts} from "../contexts";
-import {string} from "yup";
-import {useEstimatedGasConditioned} from "../hooks";
-import {useGasConvertor} from "../hooks/useGasConvertor";
-import {FaGasPump} from "react-icons/fa";
 
 export const DonationCard = ({isOpen, onClose, post}: { post: PostWithCreator }): JSX.Element => {
 
-    const {donationContract, provider} = useContracts();
+    const {donationContract} = useContracts();
     const [donationValue, setDonationValue] = useState<number>();
     const [donationCurrency, setDonationCurrency] = useState<string>("ether");
     const [invalidInput, setInvalidInput] = useState<boolean>();

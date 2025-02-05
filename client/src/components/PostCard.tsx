@@ -27,6 +27,8 @@ export const PostCard = ({ post }: { post: PostWithCreator }): JSX.Element => {
     const likeETH = useGasConvertor(provider, likeGas?.gas);
     const unlikeETH = useGasConvertor(provider, unlikeGas?.gas);
 
+    const currentUserIsCreator = post.creator === signer.address
+
     useEffect(() => {
         // TODO add this to postInterface and context
         postsContract.getLikeCount(post.id).then((response) => {
@@ -150,7 +152,8 @@ export const PostCard = ({ post }: { post: PostWithCreator }): JSX.Element => {
                             Comment
                         </Button>
                     </div>
-                    <Button variant={"light"} color={"primary"} onPress={onOpen}>
+
+                    <Button variant={"light"} color={"primary"} onPress={onOpen} isDisabled={currentUserIsCreator}>
                         <FaDonate />
                         Make Donation
                     </Button>
