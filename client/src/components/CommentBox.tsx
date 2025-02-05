@@ -9,13 +9,12 @@ import commentAbi from "../abi/Comment.json";
 import { ethers } from "ethers";
 import decodeInterface from "../interfaces/decode-interface";
 import {useEvents} from "../contexts";
+import {convertTime} from "../utils/convertTime";
 
 const CommentBox = ({ postId }: { postId: string }): React.JSX.Element => {
     const [comments, setComments] = useState<Comment[]>([]);
     const [newComment, setNewComment] = useState<string>('');
     const { username } = useUserDetails();
-    const {commentCreated$} = useEvents();
-    const { signer } = useContracts();
     const {commentsContract, userProfileContract} = useContracts();
 
     useEffect(() => {
@@ -95,35 +94,35 @@ const CommentBox = ({ postId }: { postId: string }): React.JSX.Element => {
                 toast.error('There was an error trying to submit the comment!');
             }
         }
+        setNewComment("");
     };
 
     return (
-        <Card className="w-full max-w-[1024px] pb-0">
-            <CardHeader className="justify-between px-7 pt-7">
-                <div className="flex gap-5 w-full">
-                    <div className="flex flex-col gap-1 items-start justify-center w-full">
-                        <h4 className="text-small font-semibold leading-none text-default-600">@{username}</h4>
-                    </div>
-                </div>
-            </CardHeader>
-            <Divider />
+        <Card className="w-full max-w-[1024px] pb-0" >
             <CardBody className="px-7 text-small text-default-700 min-h-1 gap-3 py-3 w-full">
                 <form onSubmit={handleCommentSubmit} className="w-full flex gap-2">
+                    <p className={"flex flex-row w-full gap-2 align-middle items-center"}>
+                        @{username}
                     <Textarea
                         value={newComment}
                         onChange={handleCommentChange}
                         placeholder="Write a comment..."
                         className="flex-grow"
+                        minRows={1}
                     />
-                    <Button type="submit" className="flex-shrink-0">Post Comment</Button>
+                    </p>
+                    <Button type="submit" variant={"bordered"} color={"primary"} className="flex-shrink-0">Post Comment</Button>
                 </form>
             </CardBody>
             <Divider />
             <CardFooter className="gap-3 px-7 w-full">
                 <div className="comments-list w-full">
                     {comments.map((comment, index) => (
-                        <div key={index} className="comment w-full">
-                            <strong>@{comment.creator}:</strong> {comment.text}
+                        <div key={index} className="flex flex-row comment w-full justify-between">
+                            <p>
+                                <strong>@{comment.creator}:</strong> {comment.text}
+                            </p>
+                            <p className={"text-small text-default-400"}> {convertTime(BigInt(comment.timestamp))} </p>
                         </div>
                     ))}
                 </div>

@@ -1,14 +1,15 @@
-import { Alert, Avatar, Card, CardBody, CardFooter, CardHeader, Divider, Image, Textarea } from "@heroui/react";
-import React, { useRef, useState, useEffect } from "react";
-import { Button } from "@heroui/button";
-import { useFocusHandler } from "../hooks";
-import { useUserDetails } from "../contexts/UserDetailsContext";
-import { FaCamera } from "react-icons/fa";
-import { useContracts } from "../contexts/ContractsContext";
-import { pinataService } from "../utils/pinataService";
+import {Alert, Avatar, Card, CardBody, CardFooter, CardHeader, Divider, Image, Textarea} from "@heroui/react";
+import React, {useRef, useState, useEffect} from "react";
+import {Button} from "@heroui/button";
+import {useEstimatedGas, useEstimatedGasConditioned, useFocusHandler} from "../hooks";
+import {useUserDetails} from "../contexts/UserDetailsContext";
+import {FaCamera, FaGasPump} from "react-icons/fa";
+import {useContracts} from "../contexts/ContractsContext";
+import {pinataService} from "../utils/pinataService";
 import decodeInterface from "../interfaces/decode-interface";
-import { Post, postKeys } from "../interfaces/Post";
+import {Post, postKeys} from "../interfaces/Post";
 import {toast} from "react-toastify";
+import {useGasConvertor} from "../hooks/useGasConvertor";
 
 export const NewPostCard: () => React.JSX.Element = () => {
     const [isFocused, setIsFocused] = useState(false);
@@ -16,11 +17,14 @@ export const NewPostCard: () => React.JSX.Element = () => {
     const fileInputRef = useRef(null);
     useFocusHandler(cardRef, setIsFocused);
 
-    const { postsContract } = useContracts();
-    const { profilePictureUrl, username } = useUserDetails();
+    const {postsContract, provider} = useContracts();
+    const {profilePictureUrl, username} = useUserDetails();
     const [inputFile, setInputFile] = useState<File | null>(null);
     const [postText, setPostText] = useState("");
     const [uploading, setUploading] = useState(false);
+
+    const postGas = useEstimatedGasConditioned(postsContract, (c) => c.createPost, postText !== "", postText, inputFile ? String(inputFile) : "");
+    const postGasEth = useGasConvertor(provider, postGas?.gas);
 
     const handleIconClick = () => {
         if (fileInputRef.current) {
@@ -34,12 +38,15 @@ export const NewPostCard: () => React.JSX.Element = () => {
         if (inputFile) {
             upload = await pinataService.uploadFile(inputFile);
         }
-        try{
-            const tx = await toast.promise(postsContract.createPost(postText.trim(), upload), {pending: "Uploading new post...", error: "There was an error uploading the post!"});
+        try {
+            const tx = await toast.promise(postsContract.createPost(postText.trim(), upload), {
+                pending: "Uploading new post...",
+                error: "There was an error uploading the post!"
+            });
             await tx.wait();
-        }catch (err){
+        } catch (err) {
             console.log("There was an error uploading the post", err);
-        }finally {
+        } finally {
             setUploading(false);
             setIsFocused(false);
             setPostText('');
@@ -77,7 +84,9 @@ export const NewPostCard: () => React.JSX.Element = () => {
                     placeholder="What are you thinking about?"
                     minRows={isFocused ? 3 : 1}
                     value={postText}
-                    onValueChange={(value) => { setPostText(value) }}
+                    onValueChange={(value) => {
+                        setPostText(value)
+                    }}
                 >
                 </Textarea>
                 {inputFile && isFocused && (
@@ -103,10 +112,19 @@ export const NewPostCard: () => React.JSX.Element = () => {
                             }}
                             className={"hidden"}
                         />
-                        <FaCamera color={"hsl(var(--heroui-primary))"} onClick={handleIconClick} size={19} />
-                        <Button color={"primary"} variant={"ghost"} size={'sm'} onPress={handlePost} isLoading={uploading}>
-                            Post
-                        </Button>
+                        <FaCamera color={"hsl(var(--heroui-primary))"} onClick={handleIconClick} size={19}/>
+                        <div className={"flex flex-row gap-3"}>
+                            {(postText !== "") && (
+                                <p className={"flex flex-row text-default-400 text-small gap-1 items-center"}>
+                                    <FaGasPump/>
+                                    {postGasEth?.eth}
+                                </p>)
+                            }
+                            <Button color={"primary"} variant={"ghost"} size={'sm'} onPress={handlePost}
+                                    isLoading={uploading}>
+                                Post
+                            </Button>
+                        </div>
                     </>
                 )}
             </CardFooter>
