@@ -34,13 +34,17 @@ export const EventProvider: React.FC<EventProviderProps> = ({children}) => {
         } else {
             console.log("here");
             setNewPostAdded$(new Observable<any[]>((subscriber) => {
-                    console.log("subscribed");
                     const onEvent = (mapArgs) => {
                         subscriber.next(mapArgs);
                     };
 
-                    postsContract.on("PostCreated", onEvent);
+                    const addedListener = postsContract.addListener("PostCreated", onEvent);
 
+                    return () => {
+                        addedListener.then(() =>
+                            postsContract.removeListener("PostCreated", onEvent)
+                        );
+                    }
                 })
             )
         }
@@ -56,7 +60,9 @@ export const EventProvider: React.FC<EventProviderProps> = ({children}) => {
                     subscriber.next(event);
                 }
 
-                userProfileContract.addListener("ProfileUpdated", onEvent);
+                const addedListener = userProfileContract.addListener("ProfileUpdated", onEvent);
+
+                return () => addedListener.then(() => userProfileContract.removeListener("ProfileUpdated", onEvent));
 
             }));
         }
@@ -72,7 +78,9 @@ export const EventProvider: React.FC<EventProviderProps> = ({children}) => {
                     subscriber.next(event);
                 }
 
-                userProfileContract.addListener("ProfileCreated", onEvent);
+                const addedListener = userProfileContract.addListener("ProfileCreated", onEvent);
+
+                return () => addedListener.then(() => userProfileContract.removeListener("ProfileCreated", onEvent));
 
             }));
         }
@@ -88,7 +96,9 @@ export const EventProvider: React.FC<EventProviderProps> = ({children}) => {
                     subscriber.next(event);
                 }
 
-                donationContract.addListener("EtherRetreived", onEvent);
+                const addedListener = donationContract.addListener("EtherRetreived", onEvent);
+
+                return () => addedListener.then(() => donationContract.removeListener("EtherRetreived", onEvent));
 
             }));
         }
@@ -104,7 +114,9 @@ export const EventProvider: React.FC<EventProviderProps> = ({children}) => {
                     subscriber.next(event);
                 }
 
-                commentsContract.addListener("CommentCreated", onEvent);
+                const addedListener = commentsContract.addListener("CommentCreated", onEvent);
+
+                return () => addedListener.then(() => commentsContract.removeListener("CommentCreated", onEvent));
 
             }));
         }

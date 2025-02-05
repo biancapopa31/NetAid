@@ -21,11 +21,13 @@ export function useFetchFullPost() {
                 pinataService.convertCid(post.photoCid).then((url) => result.photoUrl = url) : null;
 
         const userPromise = userProfileContract.getProfile(post.creator).then(
-            (response) => {
+            async (response) => {
                 const profile = decodeInterface<UserProfile>(userProfileKeys, response);
-                // TODO: Uncomment this when needed
-                // profile.profilePictureUrl = await pinataService.convertCid(profile.profilePictureCid);
-                profile.profilePictureUrl = process.env.REACT_APP_DEFAULT_PROFILE_PICTURE;
+                if(profile.profilePictureCid) {
+                    profile.profilePictureUrl = await pinataService.convertCid(profile.profilePictureCid);
+                }else {
+                    profile.profilePictureUrl = process.env.REACT_APP_DEFAULT_PROFILE_PICTURE;
+                }
 
                 result = {...result, ...profile};
             }

@@ -119,7 +119,7 @@ const CommentBox = ({ postId }: { postId: string }): React.JSX.Element => {
                 <div className="comments-list w-full">
                     {comments.map((comment, index) => (
                         <div key={index} className="flex flex-row comment w-full justify-between">
-                            <p>
+                            <p className={"text-small"}>
                                 <strong>@{comment.creator}:</strong> {comment.text}
                             </p>
                             <p className={"text-small text-default-400"}> {convertTime(BigInt(comment.timestamp))} </p>
