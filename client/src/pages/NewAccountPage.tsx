@@ -1,5 +1,5 @@
 import React, {useRef, useState} from "react";
-import {useContracts} from "../contexts/ContractsContext";
+import {NonNullableContractsContextType, useContracts} from "../contexts/ContractsContext";
 import {useNavigate} from "react-router";
 import {useUserDetails} from "../contexts/UserDetailsContext";
 import {Card, CardBody, CardHeader, Input, Form, Textarea, Image, Divider} from "@heroui/react";
@@ -11,7 +11,7 @@ import {useEvents} from "../contexts/EventsContext";
 
 
 export function NewAccountPage() {
-    const {userProfileContract, signer} = useContracts();
+    const {userProfileContract, signer} = useContracts() as NonNullableContractsContextType;
     const {
         setUsername,
         setBio,
@@ -79,7 +79,7 @@ export function NewAccountPage() {
         setUsername(values.username as string);
         setBio(values.bio as string);
         setAccountInitialized(true);
-        navigate("/home");
+        navigate("/home", {});
 
     }
 

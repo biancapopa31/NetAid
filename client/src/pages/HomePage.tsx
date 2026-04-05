@@ -1,4 +1,3 @@
-import {SignOutButton, UserButton, useUser} from "@clerk/clerk-react";
 import React, {useEffect} from "react";
 import {Outlet} from "react-router-dom";
 import {Header} from "../components/Header";
@@ -7,8 +6,6 @@ import {Spinner} from "@heroui/react";
 import {Bounce, ToastContainer} from "react-toastify";
 
 export function HomePage() {
-    const { user } = useUser();
-
     const {isLoading} = useLoader();
 
     if(isLoading){

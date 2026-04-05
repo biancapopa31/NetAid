@@ -11,10 +11,8 @@ describe("Post", function () {
   let addr2;
 
   beforeEach(async function () {
-    // Get signers
     [owner, addr1, addr2] = await ethers.getSigners();
 
-    // Deploy the contract
     const PostFactory = await ethers.getContractFactory("Post");
     post = await PostFactory.deploy();
   });
@@ -24,12 +22,10 @@ describe("Post", function () {
       const text = "Hello World";
       const photoCid = "QmTest123";
 
-      // Create post and check event
       await expect(post.connect(addr1).createPost(text, photoCid))
         .to.emit(post, "PostCreated")
         .withArgs([0, text, photoCid, anyValue , addr1.address]);
 
-      // Check NFT ownership
       expect(await post.ownerOf(0)).to.equal(addr1.address);
       expect(await post.balanceOf(addr1.address)).to.equal(1);
     });

@@ -2,7 +2,6 @@ const { expect } = require("chai");
 const { ethers } = require("hardhat");
 
 describe("UserProfile", function () {
-  let UserProfile;
   let userProfile;
   let owner;
   let addr1;
@@ -10,15 +9,12 @@ describe("UserProfile", function () {
   let donationContract;
 
   beforeEach(async function () {
-    // Get test accounts
     [owner, addr1, addr2, donationContract] = await ethers.getSigners();
 
-    // Deploy the contract
     const UserProfileFactory = await ethers.getContractFactory("UserProfile");
     userProfile = await UserProfileFactory.deploy();
 
 
-    // Set donation contract
     await userProfile.connect(donationContract).setDonationContract();
   });
 

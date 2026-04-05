@@ -9,28 +9,32 @@
 				"anonymous": false,
 				"inputs": [
 					{
+						"components": [
+							{
+								"internalType": "string",
+								"name": "username",
+								"type": "string"
+							},
+							{
+								"internalType": "string",
+								"name": "bio",
+								"type": "string"
+							},
+							{
+								"internalType": "string",
+								"name": "profilePictureCdi",
+								"type": "string"
+							},
+							{
+								"internalType": "uint256",
+								"name": "balance",
+								"type": "uint256"
+							}
+						],
 						"indexed": false,
-						"internalType": "address",
-						"name": "user",
-						"type": "address"
-					},
-					{
-						"indexed": false,
-						"internalType": "string",
-						"name": "username",
-						"type": "string"
-					},
-					{
-						"indexed": false,
-						"internalType": "string",
-						"name": "bio",
-						"type": "string"
-					},
-					{
-						"indexed": false,
-						"internalType": "string",
-						"name": "profilePictureURI",
-						"type": "string"
+						"internalType": "struct DataTypes.Profile",
+						"name": "_profile",
+						"type": "tuple"
 					}
 				],
 				"name": "ProfileCreated",
@@ -40,28 +44,32 @@
 				"anonymous": false,
 				"inputs": [
 					{
+						"components": [
+							{
+								"internalType": "string",
+								"name": "username",
+								"type": "string"
+							},
+							{
+								"internalType": "string",
+								"name": "bio",
+								"type": "string"
+							},
+							{
+								"internalType": "string",
+								"name": "profilePictureCdi",
+								"type": "string"
+							},
+							{
+								"internalType": "uint256",
+								"name": "balance",
+								"type": "uint256"
+							}
+						],
 						"indexed": false,
-						"internalType": "address",
-						"name": "user",
-						"type": "address"
-					},
-					{
-						"indexed": false,
-						"internalType": "string",
-						"name": "username",
-						"type": "string"
-					},
-					{
-						"indexed": false,
-						"internalType": "string",
-						"name": "bio",
-						"type": "string"
-					},
-					{
-						"indexed": false,
-						"internalType": "string",
-						"name": "profilePictureURI",
-						"type": "string"
+						"internalType": "struct DataTypes.Profile",
+						"name": "_profile",
+						"type": "tuple"
 					}
 				],
 				"name": "ProfileUpdated",
@@ -81,11 +89,35 @@
 					},
 					{
 						"internalType": "string",
-						"name": "profilePictureURI",
+						"name": "profilePictureCdi",
 						"type": "string"
 					}
 				],
 				"name": "createNewProfile",
+				"outputs": [
+					{
+						"internalType": "bool",
+						"name": "",
+						"type": "bool"
+					}
+				],
+				"stateMutability": "nonpayable",
+				"type": "function"
+			},
+			{
+				"inputs": [
+					{
+						"internalType": "address",
+						"name": "user",
+						"type": "address"
+					},
+					{
+						"internalType": "uint256",
+						"name": "amount",
+						"type": "uint256"
+					}
+				],
+				"name": "decUserBalance",
 				"outputs": [
 					{
 						"internalType": "bool",
@@ -110,7 +142,7 @@
 					},
 					{
 						"internalType": "string",
-						"name": "profilePictureURI",
+						"name": "profilePictureCdi",
 						"type": "string"
 					}
 				],
@@ -159,6 +191,19 @@
 			},
 			{
 				"inputs": [],
+				"name": "getAddress",
+				"outputs": [
+					{
+						"internalType": "address",
+						"name": "",
+						"type": "address"
+					}
+				],
+				"stateMutability": "view",
+				"type": "function"
+			},
+			{
+				"inputs": [],
 				"name": "getAllUsersAddrs",
 				"outputs": [
 					{
@@ -194,16 +239,52 @@
 							},
 							{
 								"internalType": "string",
-								"name": "profilePictureURI",
+								"name": "profilePictureCdi",
 								"type": "string"
+							},
+							{
+								"internalType": "uint256",
+								"name": "balance",
+								"type": "uint256"
 							}
 						],
-						"internalType": "struct UserProfile.Profile",
+						"internalType": "struct DataTypes.Profile",
 						"name": "",
 						"type": "tuple"
 					}
 				],
 				"stateMutability": "view",
+				"type": "function"
+			},
+			{
+				"inputs": [
+					{
+						"internalType": "address",
+						"name": "user",
+						"type": "address"
+					},
+					{
+						"internalType": "uint256",
+						"name": "amount",
+						"type": "uint256"
+					}
+				],
+				"name": "incUserBalance",
+				"outputs": [
+					{
+						"internalType": "bool",
+						"name": "",
+						"type": "bool"
+					}
+				],
+				"stateMutability": "nonpayable",
+				"type": "function"
+			},
+			{
+				"inputs": [],
+				"name": "setDonationContract",
+				"outputs": [],
+				"stateMutability": "nonpayable",
 				"type": "function"
 			},
 			{
@@ -255,12 +336,20 @@
 				"dweb:/ipfs/QmddTAHYhr6kJpqnqbafx8bhBL6fc4ahoXVXy2oDpMNr7d"
 			]
 		},
-		"server/contracts/UserProfile.sol": {
-			"keccak256": "0xa5720ff648eda72511354593bc5022ec7275ad346acb5c354a43eab8d9f76ba7",
+		"server/Libraries/DataTypes.sol": {
+			"keccak256": "0x162244bf5d74307b6aebc34ea7428ca77197d59870a11cf4e7e4ec9bdb7dc037",
 			"license": "MIT",
 			"urls": [
-				"bzz-raw://213f65f9e54c122575ea445c571d54dfcd9281d0166ff57e4e401d0a6b8162ed",
-				"dweb:/ipfs/QmciGmupmBhLEYykYYwdQrBnWptYPBk1vHv4KLPywzn3D1"
+				"bzz-raw://57742fe15be160ee7b31a77edfef259f21c02e423bc3b083ee9240a52eb1ef02",
+				"dweb:/ipfs/QmNzDDvjhBDDEYUUxCyiGv5PNnnt5apRBSXBxR3Fq98ifk"
+			]
+		},
+		"server/contracts/UserProfile.sol": {
+			"keccak256": "0xa0bdaa8bc7273ad73718f8570757f738522815f12d0dce93e0b2ef571b21e33f",
+			"license": "MIT",
+			"urls": [
+				"bzz-raw://d40f7c2920f307c89b423e92a3bb33ca284711f3cd7a6be73ee438835ca0fd4c",
+				"dweb:/ipfs/QmUFRLTcpvM2fGAbjiNchtgbf1Lyqx9rhQYcnk7Pnrefdu"
 			]
 		}
 	},

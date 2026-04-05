@@ -5,7 +5,7 @@ import {Spinner} from "@heroui/react";
 
 export const DecisionPage = () => {
     const navigate = useNavigate();
-    const {accountInitialized, setAccountInitialized, setBio, bio, username, setUsername} = useUserDetails();
+    const {accountInitialized} = useUserDetails();
 
     useEffect(() => {
         console.log("In decision page",accountInitialized);

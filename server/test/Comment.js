@@ -1,6 +1,6 @@
 const { expect } = require("chai");
 const { ethers } = require("hardhat");
-const { anyValue } = require ("@nomicfoundation/hardhat-chai-matchers/withArgs");
+const { anyValue } = require ("@nomicfoundation/hardhat-chai-matcherns/withArgs");
 const {bigint} = require("hardhat/internal/core/params/argumentTypes");
 
 
@@ -14,18 +14,14 @@ describe("Comment", function () {
     let post;
 
     beforeEach(async function () {
-        // Get signers
         [owner, addr1, addr2] = await ethers.getSigners();
 
-        // Deploy Post contract first (since comments are linked to posts)
         const PostFactory = await ethers.getContractFactory("Post");
         post = await PostFactory.deploy();
 
-        // Deploy Comment contract
         const CommentFactory = await ethers.getContractFactory("Comment");
         comment = await CommentFactory.deploy();
 
-        // Create a test post to comment on
         await post.connect(addr1).createPost("Test Post", "QmTest");
     });
 
@@ -118,10 +114,8 @@ describe("Comment", function () {
         });
 
         it("Should handle comments across different posts", async function () {
-            // Create another post
             await post.connect(addr1).createPost("Second Post", "Qm2");
 
-            // Add comments to both posts
             await comment.connect(addr1).createComment("Comment on post 0", 0);
             await comment.connect(addr1).createComment("Comment on post 1", 1);
 

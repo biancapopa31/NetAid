@@ -1,16 +1,14 @@
-import React, {ReactNode, useCallback, useContext, useEffect, useState} from "react";
-import {useUser} from "@clerk/clerk-react";
-import {useContracts} from "./ContractsContext";
-import {ethers} from "ethers";
-import {pinata} from "../utils/config";
-import {useLoader} from "./LoaderContext";
+import React, { ReactNode, useCallback, useContext, useEffect, useState } from "react";
+import { useContracts, NonNullableContractsContextType } from "./ContractsContext";
 import decodeInterface from "../interfaces/decode-interface";
-import {UserProfile, userProfileKeys} from "../interfaces/UserProfile";
-import {pinataService} from "../utils/pinataService";
+import { UserProfile, userProfileKeys } from "../interfaces/UserProfile";
+import { pinataService } from "../utils/pinataService";
+import handleErrors from "../utils/errorHandler";
+import { useClerk } from "@clerk/clerk-react";
 
 interface UserDetails {
-    accountInitialized: boolean|null;
-    setAccountInitialized: React.Dispatch<React.SetStateAction<boolean|null>>;
+    accountInitialized: boolean | null;
+    setAccountInitialized: React.Dispatch<React.SetStateAction<boolean | null>>;
     username: string;
     setUsername: React.Dispatch<React.SetStateAction<string>>;
     bio: string;
@@ -25,17 +23,17 @@ interface UserDetails {
 
 const initialState: UserDetails = {
     accountInitialized: null,
-    setAccountInitialized: () => {},
+    setAccountInitialized: () => { },
     username: '',
-    setUsername: () => {},
+    setUsername: () => { },
     bio: '',
-    setBio: () => {},
+    setBio: () => { },
     profilePictureCdi: `${process.env.REACT_APP_DEFAULT_AVATAR_CID}`,
-    setProfilePictureCdi: () => {},
+    setProfilePictureCdi: () => { },
     profilePictureUrl: '',
-    setProfilePictureUrl: () => {},
+    setProfilePictureUrl: () => { },
     balance: 0,
-    setBalance: () => {},
+    setBalance: () => { },
 }
 
 const UserDetailsContext = React.createContext<UserDetails>(initialState);
@@ -45,39 +43,47 @@ interface UserDetailsProviderProps {
 }
 
 export const UserDetailsProvider: React.FC<UserDetailsProviderProps> = ({ children }) => {
-   const [accountInitialized, setAccountInitialized] = useState<boolean| null>(null);
-   const [username, setUsername] = useState<string>();
-   const [bio, setBio] = useState<string>('');
-   const [profilePictureCdi, setProfilePictureCdi] = useState<string>('');
-   const [profilePictureUrl, setProfilePictureUrl] = useState<string>('');
-   const {userProfileContract, signer} = useContracts();
-   const [balance, setBalance] = useState<number>(0);
+    const [accountInitialized, setAccountInitialized] = useState<boolean | null>(null);
+    const [username, setUsername] = useState<string>();
+    const [bio, setBio] = useState<string>('');
+    const [profilePictureCdi, setProfilePictureCdi] = useState<string>('');
+    const [profilePictureUrl, setProfilePictureUrl] = useState<string>('');
+    const { userProfileContract, signer } = useContracts() as NonNullableContractsContextType;
+    const [balance, setBalance] = useState<number>(0);
+    const clerk = useClerk();
 
     const checkUser = useCallback(async () => {
-        try {
+        handleErrors(async () => {
             const exists = await userProfileContract.existsUser(signer.getAddress());
             setAccountInitialized(exists);
-        }catch (err){
-            console.error("Can't verify user", err);
-        }
+        }, {
+            message: "Failed to check user profile. Please try again later. Hint: make sure you are connected to the correct Ethereum network and use a valid account.",
+            onError: async (e) => {
+                await clerk.signOut();
+            }
+        });
     }, [userProfileContract, signer, setAccountInitialized]);
 
 
     const fetchAndStoreUserDetails = useCallback(async () => {
-            const response = await userProfileContract.getProfile(signer);
-            const profile = decodeInterface<UserProfile>(userProfileKeys, response);
+        const response = await userProfileContract.getProfile(signer);
+        const profile = decodeInterface<UserProfile>(userProfileKeys, response);
 
-            setUsername(profile.username);
-            setBio(profile.bio);
-            setBalance(profile.balance);
-            if(profile.profilePictureCid){
-                setProfilePictureCdi(profile.profilePictureCid);
-                const profilePictureUrl = await pinataService.convertCid(profile.profilePictureCid);
+        setUsername(profile.username);
+        setBio(profile.bio);
+        setBalance(profile.balance);
+        if (profile.profilePictureCid) {
+            setProfilePictureCdi(profile.profilePictureCid);
+            const profilePictureUrl = await pinataService.convertCid(profile.profilePictureCid);
+            if (profilePictureUrl) {
                 setProfilePictureUrl(profilePictureUrl);
-            }else {
-                // TODO: remove hardcoding
+            }
+        } else {
+            // TODO: remove hardcoding
+            if (process.env.REACT_APP_DEFAULT_PROFILE_PICTURE) {
                 setProfilePictureUrl(process.env.REACT_APP_DEFAULT_PROFILE_PICTURE);
             }
+        }
 
     }, [userProfileContract, signer, setUsername, setBio, setProfilePictureUrl, setProfilePictureCdi]);
 
@@ -89,7 +95,7 @@ export const UserDetailsProvider: React.FC<UserDetailsProviderProps> = ({ childr
     }, [fetchAndStoreUserDetails, accountInitialized]);
 
     useEffect(() => {
-        if(userProfileContract){
+        if (userProfileContract) {
             checkUser();
         }
     }, [signer, checkUser, userProfileContract]);

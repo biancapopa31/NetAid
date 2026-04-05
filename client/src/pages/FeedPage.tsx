@@ -1,10 +1,9 @@
 import { NewPostCard, PostCard } from "../components";
-import { useContracts } from "../contexts/ContractsContext";
 import React, {useEffect, useMemo, useState} from "react";
 import decodeInterface from "../interfaces/decode-interface";
 import { Post, postKeys } from "../interfaces/Post";
 import { useEvents } from "../contexts/EventsContext";
-import { Bounce, toast, ToastContainer } from "react-toastify";
+import { toast } from "react-toastify";
 import {usePosts} from "../contexts";
 import {Spinner} from "@heroui/react";
 import {useFetchFullPost} from "../hooks/useFetchFullPost";
@@ -54,4 +53,13 @@ export function FeedPage() {
                 }
         </div>
     );
+}
+
+function delay(ms: number) {
+    return new Promise( resolve => setTimeout(resolve, ms) );
+}
+
+export const feedLoader = async () => {
+    await delay(1000);
+    return ;
 }

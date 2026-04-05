@@ -6,35 +6,43 @@
 	"output": {
 		"abi": [
 			{
-				"inputs": [],
-				"name": "getAllContent",
+				"inputs": [
+					{
+						"internalType": "uint256",
+						"name": "contentId",
+						"type": "uint256"
+					}
+				],
+				"name": "getLikeCount",
 				"outputs": [
 					{
-						"components": [
-							{
-								"internalType": "uint256",
-								"name": "id",
-								"type": "uint256"
-							},
-							{
-								"internalType": "string",
-								"name": "contentURI",
-								"type": "string"
-							},
-							{
-								"internalType": "uint256",
-								"name": "timestamp",
-								"type": "uint256"
-							},
-							{
-								"internalType": "address",
-								"name": "creator",
-								"type": "address"
-							}
-						],
-						"internalType": "struct ContentBase.Content[]",
+						"internalType": "uint256",
 						"name": "",
-						"type": "tuple[]"
+						"type": "uint256"
+					}
+				],
+				"stateMutability": "view",
+				"type": "function"
+			},
+			{
+				"inputs": [
+					{
+						"internalType": "uint256",
+						"name": "contentId",
+						"type": "uint256"
+					},
+					{
+						"internalType": "address",
+						"name": "userAddress",
+						"type": "address"
+					}
+				],
+				"name": "isLikedByUser",
+				"outputs": [
+					{
+						"internalType": "bool",
+						"name": "",
+						"type": "bool"
 					}
 				],
 				"stateMutability": "view",
@@ -48,37 +56,34 @@
 						"type": "uint256"
 					}
 				],
-				"name": "getContent",
+				"name": "like",
 				"outputs": [
 					{
-						"components": [
-							{
-								"internalType": "uint256",
-								"name": "id",
-								"type": "uint256"
-							},
-							{
-								"internalType": "string",
-								"name": "contentURI",
-								"type": "string"
-							},
-							{
-								"internalType": "uint256",
-								"name": "timestamp",
-								"type": "uint256"
-							},
-							{
-								"internalType": "address",
-								"name": "creator",
-								"type": "address"
-							}
-						],
-						"internalType": "struct ContentBase.Content",
+						"internalType": "uint256",
 						"name": "",
-						"type": "tuple"
+						"type": "uint256"
 					}
 				],
-				"stateMutability": "view",
+				"stateMutability": "nonpayable",
+				"type": "function"
+			},
+			{
+				"inputs": [
+					{
+						"internalType": "uint256",
+						"name": "contentId",
+						"type": "uint256"
+					}
+				],
+				"name": "unlike",
+				"outputs": [
+					{
+						"internalType": "uint256",
+						"name": "",
+						"type": "uint256"
+					}
+				],
+				"stateMutability": "nonpayable",
 				"type": "function"
 			}
 		],
@@ -110,11 +115,11 @@
 	},
 	"sources": {
 		"server/contracts/ContentBase.sol": {
-			"keccak256": "0x9945457c61cd7ebd3c4d44ffd3fef4b4ba6730836f118ab655d8ffe2f5410187",
+			"keccak256": "0xabb1877c5a50115e3c3028c1fc6155a6ad2a32c07c8abe6b2c96f073cd50f4f0",
 			"license": "MIT",
 			"urls": [
-				"bzz-raw://d4c7e838e19dd4a9bb480ad3685b17b82c2c690d5b36830ed14f59c9d4ceb5fa",
-				"dweb:/ipfs/QmVJCvqNU6p9e3sdqT8NneiUvBwgXVJwfnZ5BCK8s5py77"
+				"bzz-raw://d34616091e19fb34658aef354bc0ffe240f4e7fb9cfcb64315464ff3cc094cd1",
+				"dweb:/ipfs/Qmd3onvPKVbgEjk3cTjCHGPMp3goi787T5XaUPYpgz1Gpj"
 			]
 		}
 	},

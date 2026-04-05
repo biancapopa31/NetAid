@@ -2,10 +2,8 @@ const { expect } = require("chai");
 const { ethers } = require("hardhat");
 
 describe("Donation", function () {
-    let Donation;
     let donation;
     let userProfile;
-    let UserProfile;
     let owner;
     let addr1;
     let addr2;
@@ -58,7 +56,6 @@ describe("Donation", function () {
 
     describe("Retrieval", function () {
         beforeEach(async function () {
-            // Setup: make a donation first
             await donation.connect(addr1).donate(addr2.address, { value: ethers.parseEther("1.0") });
         });
 
@@ -74,7 +71,6 @@ describe("Donation", function () {
         });
 
         it("Should fail if contract has no ETH", async function () {
-            // First retrieve all ETH
             await donation.connect(addr2).retreive();
 
             await expect(
@@ -109,7 +105,6 @@ describe("Donation", function () {
         });
 
         it("Should set donation contract in user profile", async function () {
-            // This will be verified through the  contract
             await expect(donation.setContractInUserProfile())
                 .to.not.be.reverted;
         });
